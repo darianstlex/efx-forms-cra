@@ -1,0 +1,30 @@
+.Checkbox-wrapper {
+    padding: 0 0 24px 0;
+    position: relative;
+}
+
+.Checkbox-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Checkbox-label {
+    font-size: 16px;
+    text-align: left;
+}
+
+.Checkbox-input {
+    font-size: 16px;
+    height: 24px;
+    width: 24px;
+    margin: 12px 0;
+}
+
+.Checkbox-error {
+    font-size: 12px;
+    color: #d91c78;
+    position: absolute;
+    top: 60px;
+    left: 0;
+}
