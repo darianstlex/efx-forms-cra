@@ -17,7 +17,7 @@ export const EfxForm = ({
 
   const submit = async (e) => {
     e.preventDefault();
-    form.submit(onSubmit);
+    form.submit({ cb: onSubmit });
   };
 
   const fields = React.Children.toArray(children);

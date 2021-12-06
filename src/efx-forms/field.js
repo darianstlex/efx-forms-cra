@@ -57,8 +57,10 @@ export const createField = ({ name, ...fieldConfig }, {
       fn: (value) => config.validators.map((vd) => vd(value)).filter(Boolean),
     }),
     (_, errors) => errors,
-  ).on(submitRemote.fail, (_, { errors }) => errors && errors[name] ? [errors[name]] : [])
-    .reset(reset);
+  ).on(
+    submitRemote.failData,
+    (_, { remoteErrors }) => remoteErrors && remoteErrors[name] ? [remoteErrors[name]] : [],
+  ).reset(reset);
 
   sample({
     source: $errors,

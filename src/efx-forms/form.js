@@ -39,7 +39,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
 
   const $deep = $values.map((values) => reduce(values, (acc, val, key) => set(acc, key, val), {}));
 
-  const submit = (cb) => {
+  const submit = ({ cb }) => {
     Object.values(fields).forEach(({ validate }) => validate());
     if ($valid.getState()) {
       cb({ flat: $values.getState(), deep: $deep.getState() });
@@ -47,21 +47,21 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
   };
 
   const submitRemote = domain.effect({
-    handler: async (cb, { skipValidation = false }) => {
+    handler: async ({ cb, options: { skipValidation = false } = {} }) => {
       if (!skipValidation) {
         Object.values(fields).forEach(({ validate }) => validate());
         if (!$valid.getState()) {
-          return Promise.reject({ validations: $validations.getState() });
+          return Promise.reject({ errors: $validations.getState() });
         }
       }
-      const errors = await cb($values.getState());
-      if (isEmpty(errors)) {
+      const remoteErrors = await cb($values.getState());
+      if (isEmpty(remoteErrors)) {
         return Promise.resolve({
           flat: $values.getState(),
           deep: $deep.getState(),
         });
       }
-      return Promise.reject({ errors });
+      return Promise.reject({ remoteErrors });
     },
     name: `${name}-form-submit`,
   });

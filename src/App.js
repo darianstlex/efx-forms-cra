@@ -1,18 +1,19 @@
 import './App.css';
-// import { getForm } from './efx-forms';
+import { getForm } from './efx-forms';
 import { EfxForm, EfxField } from './efx-forms/react';
 import { Input } from './components/Input';
 import { Checkbox } from './components/Checkbox';
 
-// const vehicleForm = getForm('vehicle');
+const vehicleForm = getForm('vehicle');
 
 const required = (msg = 'Field is required') => (val) => !val ? msg : false;
 const email = (msg = 'Not valid email') => (val) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? msg : false;
 const min = (min, msg = `Should be greater than ${min}`) => (val) => val < min ? msg : false;
 
 function App() {
-  const submit = (data) => {
-    console.log('SUBMIT: ', data);
+  const submit = async () => {
+    const api = () => Promise.resolve({ 'user.name': 'Name is required' });
+    vehicleForm.submitRemote({ cb: api, options: { skipValidation: true }});
   };
   return (
     <div className="App">
@@ -48,7 +49,7 @@ function App() {
               validators={[required()]}
             />
           </EfxForm>
-          <EfxForm name="vehicle" onSubmit={submit}>
+          <EfxForm name="vehicle">
             <EfxField
               name="customer.name"
               Field={Input}
@@ -82,7 +83,7 @@ function App() {
               type="text"
               validators={[required()]}
             />
-            <button type="submit">Submit</button>
+            <button type="button" onClick={submit}>Submit</button>
           </EfxForm>
         </div>
       </header>
