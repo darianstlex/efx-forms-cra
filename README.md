@@ -1,6 +1,4 @@
-# Getting Started with Create React App
-
-Effector Forms
+# Effector Forms
 
 ## Available Scripts
 
