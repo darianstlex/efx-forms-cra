@@ -1,4 +1,4 @@
-import { combine } from 'effector';
+import { combine, guard } from 'effector';
 import { domain } from './utils';
 import { isEmpty, set, reduce } from 'lodash';
 import { createField } from './field';
@@ -99,7 +99,10 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
         updateValidation,
         updateTouch,
         updateValue,
-        submitRemote,
+        setRemoteErrors: guard({
+          source: submitRemote.failData,
+          filter: ({ remoteErrors }) => remoteErrors,
+        }),
       });
       fields[name].syncData();
       return fields[name];

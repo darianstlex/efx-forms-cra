@@ -12,8 +12,8 @@ const min = (min, msg = `Should be greater than ${min}`) => (val) => val < min ?
 
 function App() {
   const submit = async () => {
-    const api = () => Promise.resolve({ 'user.name': 'Name is required' });
-    vehicleForm.submitRemote({ cb: api, options: { skipValidation: true }});
+    const api = () => Promise.resolve({ 'user.name': 'Name is already used' });
+    vehicleForm.submitRemote({ cb: api });
   };
   return (
     <div className="App">
