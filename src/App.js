@@ -11,7 +11,7 @@ const email = (msg = 'Not valid email') => (val) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$
 const min = (min, msg = `Should be greater than ${min}`) => (val) => val < min ? msg : false;
 
 function App() {
-  const submit = async () => {
+  const remoteSubmit = async () => {
     const api = () => Promise.resolve({ 'user.name': 'Name is already used' });
     vehicleForm.submitRemote({ cb: api });
   };
@@ -19,13 +19,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="App-form">
-          <EfxForm name="vehicle">
+          <EfxForm name="vehicle" initialValues={{
+            'user.name': 'Tester',
+            'user.age': 34,
+          }}>
             <EfxField
               name="user.name"
               Field={Input}
               label="User Name"
               type="text"
               validators={[required()]}
+              initialValue="JustName"
             />
             <EfxField
               name="user.email"
@@ -83,7 +87,9 @@ function App() {
               type="text"
               validators={[required()]}
             />
-            <button type="button" onClick={submit}>Submit</button>
+            <button type="button" onClick={remoteSubmit}>Remote Submit</button>
+            {' '}
+            <button type="submit">Submit</button>
           </EfxForm>
         </div>
       </header>

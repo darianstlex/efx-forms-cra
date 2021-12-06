@@ -24,7 +24,7 @@ export const EfxForm = ({
   return (
     <form onSubmit={submit}>
       {fields.map(field => {
-        const isExField = field.type.componentName === 'ExField';
+        const isExField = field?.type?.componentName === 'ExField';
         return isExField ? React.cloneElement(field, {
           form,
           formConfig: {
@@ -63,9 +63,7 @@ export const EfxField = ({
       validateOnChange,
       ...formConfig,
     };
-    if (field) {
-      field.config = fieldConfig;
-    }
+    field && (field.config = fieldConfig);
     return field || form.registerField(fieldConfig);
   }, [form, name, initialValue, parse, validators, validateOnBlur, validateOnChange, formConfig]);
 

@@ -36,7 +36,7 @@ export const createField = ({ name, ...fieldConfig }, {
     .on(onChange, () => true)
     .reset(reset);
 
-  const $changedAfterBlur = domain.store(false, { name: `$${name}-field-changed` })
+  const $changedAfterBlur = domain.store(false, { name: `$${name}-field-changed-after-blur` })
     .on(onChange, () => true)
     .on(validate, () => false)
     .reset(reset);
