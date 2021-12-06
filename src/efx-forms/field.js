@@ -11,6 +11,7 @@ export const createField = ({ name, ...fieldConfig }, {
   updateValidation,
   updateTouch,
   updateValue,
+  submitRemote,
 }) => {
   let config = { name, ...fieldConfig };
 
@@ -56,7 +57,8 @@ export const createField = ({ name, ...fieldConfig }, {
       fn: (value) => config.validators.map((vd) => vd(value)).filter(Boolean),
     }),
     (_, errors) => errors,
-  ).on(setError, (_, error) => error ? [error] : []).reset(reset);
+  ).on(submitRemote.fail, (_, { errors }) => errors && errors[name] ? [errors[name]] : [])
+    .reset(reset);
 
   sample({
     source: $errors,

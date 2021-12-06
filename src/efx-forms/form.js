@@ -51,7 +51,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
       if (!skipValidation) {
         Object.values(fields).forEach(({ validate }) => validate());
         if (!$valid.getState()) {
-          return Promise.reject($validations.getState());
+          return Promise.reject({ validations: $validations.getState() });
         }
       }
       const errors = await cb($values.getState());
@@ -61,8 +61,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
           deep: $deep.getState(),
         });
       }
-      Object.entries(fields).map(([name, field]) => field.setError(errors[name]));
-      return Promise.reject(errors);
+      return Promise.reject({ errors });
     },
     name: `${name}-form-submit`,
   });
@@ -100,6 +99,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
         updateValidation,
         updateTouch,
         updateValue,
+        submitRemote,
       });
       fields[name].syncData();
       return fields[name];
