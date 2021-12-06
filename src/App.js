@@ -13,13 +13,21 @@ const min = (min, msg = `Should be greater than ${min}`) => (val) => val < min ?
 function App() {
   const remoteSubmit = async () => {
     const api = () => Promise.resolve({ 'user.name': 'Name is already used' });
-    vehicleForm.submitRemote({ cb: api });
+    try {
+      const data = await vehicleForm.submitRemote({ cb: api });
+      console.log('REMOTE SUBMIT: ', data);
+    } catch (e) {
+      console.log('REMOTE SUBMIT ERROR: ', e);
+    }
+  };
+  const submit = (data) => {
+    console.log('SUBMIT: ', data);
   };
   return (
     <div className="App">
       <header className="App-header">
         <div className="App-form">
-          <EfxForm name="vehicle" initialValues={{
+          <EfxForm name="vehicle" onSubmit={submit} initialValues={{
             'user.name': 'Tester',
             'user.age': 34,
           }}>
