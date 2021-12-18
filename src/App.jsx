@@ -5,9 +5,6 @@ import { Input } from './components/Input';
 import { Checkbox } from './components/Checkbox';
 
 const vehicleForm = getForm('vehicle');
-vehicleForm.$changes.updates.watch((values) => {
-  console.log('WATCH: ', values);
-});
 
 const required = (msg = 'Field is required') => (val) => !val ? msg : false;
 const email = (msg = 'Not valid email') => (val) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? msg : false;

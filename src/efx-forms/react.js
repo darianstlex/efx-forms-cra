@@ -6,6 +6,8 @@ import { fieldConfigDefault } from './field';
 export const EfxForm = ({
   children = null,
   onSubmit = () => {},
+  remoteValidation = false,
+  skipClientValidation = false,
   name = formConfigDefault.name,
   initialValues = formConfigDefault.initialValues,
   validateOnBlur = formConfigDefault.validateOnBlur,
@@ -15,8 +17,11 @@ export const EfxForm = ({
     return createForm(name);
   }, [name]);
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
+    if (remoteValidation) {
+      return form.submitRemote({ cb: onSubmit, skipClientValidation });
+    }
     form.submit({ cb: onSubmit });
   };
 

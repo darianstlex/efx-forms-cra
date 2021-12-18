@@ -1,6 +1,8 @@
 import { guard, sample } from 'effector';
 import { domain } from './utils';
 
+const { store, event } = domain;
+
 export const fieldConfigDefault = {
   parse: value => value,
   format: value => value,
@@ -8,7 +10,7 @@ export const fieldConfigDefault = {
 };
 
 export const createField = ({ name, ...fieldConfig }, {
-  updateFormChange,
+  formChange,
   updateValidation,
   updateTouch,
   updateValue,
@@ -16,13 +18,13 @@ export const createField = ({ name, ...fieldConfig }, {
 }) => {
   let config = { name, ...fieldConfig };
 
-  const update = domain.event(`${name}-field-update`);
-  const reset = domain.event(`${name}-field-reset`);
-  const validate = domain.event(`${name}-field-validate`);
-  const setError = domain.event(`${name}-field-push-error`);
-  const onChange = domain.event(`${name}-field-onChange`);
-  const onBlur = domain.event(`${name}-field-onBlur`);
-  const $value = domain.store(config.initialValue || null, { name: `$${name}-field-value` })
+  const update = event(`${name}-field-update`);
+  const reset = event(`${name}-field-reset`);
+  const validate = event(`${name}-field-validate`);
+  const setError = event(`${name}-field-push-error`);
+  const onChange = event(`${name}-field-onChange`);
+  const onBlur = event(`${name}-field-onBlur`);
+  const $value = store(config.initialValue || null, { name: `$${name}-field-value` })
     .on(update, (_, value) => value)
     .on(onChange, (_, value) => config.parse(value))
     .on(reset, () => config.initialValue || null);
@@ -30,7 +32,7 @@ export const createField = ({ name, ...fieldConfig }, {
   sample({
     source: onChange,
     fn: (value) => ({ name, value }),
-    target: updateFormChange,
+    target: formChange,
   });
 
   sample({
@@ -39,11 +41,11 @@ export const createField = ({ name, ...fieldConfig }, {
     target: updateValue,
   });
 
-  const $touched = domain.store(false, { name: `$${name}-field-touched` })
+  const $touched = store(false, { name: `$${name}-field-touched` })
     .on(onChange, () => true)
     .reset(reset);
 
-  const $changedAfterBlur = domain.store(false, { name: `$${name}-field-changed-after-blur` })
+  const $changedAfterBlur = store(false, { name: `$${name}-field-changed-after-blur` })
     .on(onChange, () => true)
     .on(validate, () => false)
     .reset(reset);
@@ -54,7 +56,7 @@ export const createField = ({ name, ...fieldConfig }, {
     target: updateTouch,
   });
 
-  const $errors = domain.store([], {
+  const $errors = store([], {
     name: `$${name}-field-errors`,
     updateFilter: (curr, prev) => JSON.stringify(curr) !== JSON.stringify(prev),
   }).on(
@@ -91,7 +93,6 @@ export const createField = ({ name, ...fieldConfig }, {
 
   const syncData = () => {
     updateValue({ name, value: $value.getState() });
-    updateTouch({ name, touched: $touched.getState() });
     const [error] = $errors.getState();
     updateValidation({ name, valid: !error });
   };

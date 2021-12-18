@@ -3,6 +3,8 @@ import { domain } from './utils';
 import { isEmpty, set, reduce } from 'lodash';
 import { createField } from './field';
 
+const { store, effect, event } = domain;
+
 export const formConfigDefault = {
   name: 'default',
   initialValues: {},
@@ -19,48 +21,52 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
 
   const fields = {};
 
-  const updateValidation = domain.event(`${name}-form-update-validation`);
-  const updateTouch = domain.event(`${name}-form-update-touch`);
-  const updateValue = domain.event(`${name}-form-update-value`);
-  const reset = domain.event(`${name}-form-reset`);
-  const onChange = domain.event(`${name}-form-change`);
+  const updateValidation = event(`${name}-form-update-validation`);
+  const updateTouch = event(`${name}-form-update-touch`);
+  const updateValue = event(`${name}-form-update-value`);
+  const reset = event(`${name}-form-reset`);
+  const onChange = event(`${name}-form-change`);
 
-  const $validations = domain.store({}, { name: `$${name}-form-validations`})
+  const $validations = store({}, { name: `$${name}-form-validations`})
     .on(updateValidation, (state, { name, valid }) => ({ ...state, [name]: valid }));
 
   const $valid = $validations.map((state) => !isEmpty(state) ? !Object.values(state).some((it) => !it) : true);
 
-  const $touches = domain.store({}, { name: `$${name}-form-touches`})
+  const $touches = store({}, { name: `$${name}-form-touches`})
     .on(updateTouch, (state, { name, touched }) => ({ ...state, [name]: touched }));
 
   const $touched = $touches.map((state) => !isEmpty(state) ? !Object.values(state).some((it) => !it): true);
 
-  const $values = domain.store({}, { name: `$${name}-form-values`})
+  const $values = store({}, { name: `$${name}-form-values`})
     .on(updateValue, (state, { name, value }) => ({ ...state, [name]: value }));
 
-  const $deep = $values.map((values) => reduce(values, (acc, val, key) => set(acc, key, val), {}));
+  const $shapedValues = $values.map((values) => reduce(values, (acc, val, key) => set(acc, key, val), {}));
 
   const submit = ({ cb }) => {
     Object.values(fields).forEach(({ validate }) => validate());
     if ($valid.getState()) {
-      cb({ flat: $values.getState(), deep: $deep.getState() });
+      cb({
+        values: $values.getState(),
+        shapedValues: $shapedValues.getState(),
+      });
     }
   };
 
-  const submitRemote = domain.effect({
-    handler: async ({ cb, options: { skipValidation = false } = {} }) => {
-      if (!skipValidation) {
+  const submitRemote = effect({
+    handler: async ({ cb, skipClientValidation = false }) => {
+      if (!skipClientValidation) {
         Object.values(fields).forEach(({ validate }) => validate());
         if (!$valid.getState()) {
           return Promise.reject({ errors: $validations.getState() });
         }
       }
-      const remoteErrors = await cb($values.getState());
+      const values = {
+        values: $values.getState(),
+        shapedValues: $shapedValues.getState(),
+      };
+      const remoteErrors = await cb(values);
       if (isEmpty(remoteErrors)) {
-        return Promise.resolve({
-          flat: $values.getState(),
-          deep: $deep.getState(),
-        });
+        return Promise.resolve(values);
       }
       return Promise.reject({ remoteErrors });
     },
@@ -72,13 +78,13 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
   });
 
   const $state = combine(
-    $validations, $valid, $touches, $touched, $values, $deep,
-    (validations, valid, touches, touched, values, deep) => ({
-      validations, valid, touches, touched, values, deep,
+    $validations, $valid, $touches, $touched, $values, $shapedValues,
+    (validations, valid, touches, touched, values, shapedValues) => ({
+      validations, valid, touches, touched, values, shapedValues,
     }),
   );
 
-  const $changes = domain.store({}, { name: `$${name}-form-changes`})
+  const $changes = store({}, { name: `$${name}-form-changes`})
     .on(sample({
       clock: onChange,
       fn: (values, { name, value }) => ({ ...values, [name]: value }),
@@ -87,11 +93,12 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
 
   return {
     $changes,
-    $deepValues: $deep,
+    $shapedValues,
     $touched,
     $valid,
     $values,
     $state,
+    $submitting: submitRemote.pending,
     reset,
     submit,
     submitRemote,
@@ -104,12 +111,13 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
     get fields() {
       return fields;
     },
+    getField: (name) => fields[name],
     registerField: ({ name, ...fieldConfig }) => {
       if (fields[name]) {
         fields[name].config = { name, ...fieldConfig };
       }
       fields[name] = createField({ name, ...fieldConfig }, {
-        updateFormChange: onChange,
+        formChange: onChange,
         updateValidation,
         updateTouch,
         updateValue,
