@@ -8,6 +8,7 @@ export const fieldConfigDefault = {
 };
 
 export const createField = ({ name, ...fieldConfig }, {
+  updateFormChange,
   updateValidation,
   updateTouch,
   updateValue,
@@ -25,6 +26,12 @@ export const createField = ({ name, ...fieldConfig }, {
     .on(update, (_, value) => value)
     .on(onChange, (_, value) => config.parse(value))
     .on(reset, () => config.initialValue || null);
+
+  sample({
+    source: onChange,
+    fn: (value) => ({ name, value }),
+    target: updateFormChange,
+  });
 
   sample({
     source: $value,

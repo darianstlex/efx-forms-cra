@@ -5,6 +5,9 @@ import { Input } from './components/Input';
 import { Checkbox } from './components/Checkbox';
 
 const vehicleForm = getForm('vehicle');
+vehicleForm.$changes.updates.watch((values) => {
+  console.log('WATCH: ', values);
+});
 
 const required = (msg = 'Field is required') => (val) => !val ? msg : false;
 const email = (msg = 'Not valid email') => (val) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? msg : false;
@@ -29,7 +32,7 @@ function App() {
         <div className="App-form">
           <EfxForm name="vehicle" onSubmit={submit} initialValues={{
             'user.name': 'Tester',
-            'user.age': 34,
+            'user.age': '34',
           }}>
             <EfxField
               name="user.name"

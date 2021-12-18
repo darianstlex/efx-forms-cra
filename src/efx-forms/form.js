@@ -1,4 +1,4 @@
-import { combine, guard } from 'effector';
+import { combine, guard, sample } from 'effector';
 import { domain } from './utils';
 import { isEmpty, set, reduce } from 'lodash';
 import { createField } from './field';
@@ -23,6 +23,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
   const updateTouch = domain.event(`${name}-form-update-touch`);
   const updateValue = domain.event(`${name}-form-update-value`);
   const reset = domain.event(`${name}-form-reset`);
+  const onChange = domain.event(`${name}-form-change`);
 
   const $validations = domain.store({}, { name: `$${name}-form-validations`})
     .on(updateValidation, (state, { name, valid }) => ({ ...state, [name]: valid }));
@@ -77,7 +78,19 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
     }),
   );
 
+  const $changes = domain.store({}, { name: `$${name}-form-changes`})
+    .on(sample({
+      clock: onChange,
+      fn: (values, { name, value }) => ({ ...values, [name]: value }),
+      source: $values,
+    }), (_, values) => values);
+
   return {
+    $changes,
+    $deepValues: $deep,
+    $touched,
+    $valid,
+    $values,
     $state,
     reset,
     submit,
@@ -96,6 +109,7 @@ const createFormHandler = (name = formConfigDefault.name, formConfig) => {
         fields[name].config = { name, ...fieldConfig };
       }
       fields[name] = createField({ name, ...fieldConfig }, {
+        updateFormChange: onChange,
         updateValidation,
         updateTouch,
         updateValue,
