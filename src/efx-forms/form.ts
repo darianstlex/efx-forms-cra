@@ -45,24 +45,45 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
   const reset = event<void>(`${name}-form-reset`);
   const onChange = event<IFormOnFieldChange>(`${name}-form-change`);
 
+  /**
+   * Validations store - keeps all fields validations
+   */
   const $validations = store<IFormValidations>({}, { name: `$${name}-form-validations`})
     .on(updateValidation, (state, { name, valid }) => ({ ...state, [name]: valid }));
 
+  /**
+   * Calculates form validation
+   */
   const $valid = $validations.map((state) => !isEmpty(state) ? !Object.values(state).some((it) => !it) : true);
 
+  /**
+   * Touches store - keeps all fields touches
+   */
   const $touches = store<IFormTouches>({}, { name: `$${name}-form-touches`})
     .on(updateTouch, (state, { name, touched }) => ({ ...state, [name]: touched }));
 
+  /**
+   * Calculates form touched
+   */
   const $touched = $touches.map((state) => !isEmpty(state) ? !Object.values(state).some((it) => !it): true);
 
+  /**
+   * Values store - keeps all fields values
+   */
   const $values = store<IFormValues>({}, { name: `$${name}-form-values`})
     .on(updateValue, (state, { name, value }) => ({ ...state, [name]: value }));
 
+  /**
+   * Transform values from flat to structured object
+   */
   const $shapedValues = $values.map((values) => reduce(values, (acc, val, key) => set(acc, key, val), {}));
 
-  const submit = ({ cb }: IFormSubmitArgs) => {
+  /**
+   * Sync form submit with option to skip validation
+   */
+  const submit = ({ cb, skipClientValidation }: IFormSubmitArgs) => {
     Object.values(fields).forEach(({ validate }) => validate());
-    if ($valid.getState()) {
+    if ($valid.getState() || skipClientValidation) {
       cb({
         values: $values.getState(),
         shapedValues: $shapedValues.getState(),
@@ -70,6 +91,11 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
     }
   };
 
+  /**
+   * Remote validation form submit with option to skip client validation
+   * cb - is api call for the remote validation, response contains validation
+   * results in format { field1: message, field2: message }, if empty - valid
+   */
   const submitRemote: Effect<IFormSubmitArgs, IFormSubmitResponseSuccess, IFormSubmitResponseError> = effect({
     handler: async ({ cb, skipClientValidation = false }) => {
       if (!skipClientValidation) {
@@ -91,6 +117,9 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
     name: `${name}-form-submit`,
   });
 
+  /**
+   * Common store with all form data
+   */
   const $state = combine(
     $validations, $valid, $touches, $touched, $values, $shapedValues,
     (validations, valid, touches, touched, values, shapedValues) => ({
@@ -98,6 +127,9 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
     }),
   );
 
+  /**
+   * Changes store, triggers on form onChange
+   */
   const $changes = store<IFormValues>({}, { name: `$${name}-form-changes`})
     .on(sample({
       clock: onChange,
@@ -153,6 +185,9 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
   };
 };
 
+/**
+ * Create/return form with the given name / config
+ */
 export const createForm = (config: IFormConfig) => {
   const { name } = config;
   if (forms[name]) {
@@ -163,5 +198,9 @@ export const createForm = (config: IFormConfig) => {
   return forms[name];
 };
 
-export const getForm = (name = formConfigDefault.name) => forms[name] || createForm({ name });
+/**
+ * Return form with given name
+ * @param name
+ */
+export const getForm = (name = formConfigDefault.name) => forms[name];
 

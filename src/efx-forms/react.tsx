@@ -1,6 +1,6 @@
 import React, { FormEvent, ReactElement, ReactNode, useMemo } from 'react';
 import { useStore } from 'effector-react';
-import { createForm, formConfigDefault, getForm } from './form';
+import { createForm, formConfigDefault } from './form';
 import { fieldConfigDefault } from './field';
 import { IField, IFieldConfig, IForm, IFormConfig, REfxFieldProps, REfxFormProps } from './model';
 import { omit } from 'lodash';
@@ -51,7 +51,7 @@ REfxForm.displayName = 'REfxForm';
 
 export const REfxField = ({
   Field,
-  form = getForm(formConfigDefault.name),
+  form = createForm({ name: formConfigDefault.name }),
   name,
   formConfig: { initialValues = {}, ...formConfig} = omit(formConfigDefault, ['name']),
   initialValue = initialValues[name],
