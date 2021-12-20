@@ -12,9 +12,11 @@ const min = (min: number, msg = `Should be greater than ${min}`) => (val: number
 
 function App() {
   const remoteSubmit = async () => {
-    const api = () => Promise.resolve({ 'user.name': 'Name is already in use' });
+    const api = () => {
+      return Promise.resolve({ 'user.name': 'Name is already in use' });
+    };
     try {
-      const data = await vehicleForm.submitRemote({ cb: api });
+      const data = await vehicleForm.submitRemote({ cb: api, skipClientValidation: true });
       console.log('REMOTE SUBMIT: ', data);
     } catch (e) {
       console.log('REMOTE SUBMIT ERROR: ', e);

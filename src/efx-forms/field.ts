@@ -99,8 +99,8 @@ export const createField = ({ name, ...fieldConfig }: Omit<IFieldConfig, 'format
 
   guard({
     clock: resetField,
-    source: $touched,
-    filter: Boolean,
+    source: [$touched, $errors],
+    filter: ([touched, [error]]) => touched || !!error,
     target: reset,
   });
 
