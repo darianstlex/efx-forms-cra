@@ -1,53 +1,59 @@
-import React, { useMemo } from 'react';
+import React, { FormEvent, ReactElement, ReactNode, useMemo } from 'react';
 import { useStore } from 'effector-react';
 import { createForm, formConfigDefault, getForm } from './form';
 import { fieldConfigDefault } from './field';
+import { IField, IFieldConfig, IForm, IFormConfig, REfxFieldProps, REfxFormProps } from './model';
+import { omit } from 'lodash';
 
-export const EfxForm = ({
+const emptyOnSubmit = () => {};
+
+export const REfxForm = ({
   children = null,
-  onSubmit = () => {},
+  onSubmit = emptyOnSubmit,
   remoteValidation = false,
   skipClientValidation = false,
   name = formConfigDefault.name,
   initialValues = formConfigDefault.initialValues,
   validateOnBlur = formConfigDefault.validateOnBlur,
   validateOnChange = formConfigDefault.validateOnChange,
-}) => {
-  const form = useMemo(() => {
-    return createForm(name);
+}: REfxFormProps) => {
+  const form: IForm = useMemo(() => {
+    return createForm({ name });
   }, [name]);
 
-  const submit = (e) => {
-    e.preventDefault();
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
     if (remoteValidation) {
       return form.submitRemote({ cb: onSubmit, skipClientValidation });
     }
     form.submit({ cb: onSubmit });
   };
 
-  const fields = React.Children.toArray(children);
+  const elements: ReactNode[] = React.Children.toArray(children);
   return (
     <form onSubmit={submit}>
-      {fields.map(field => {
-        const isExField = field?.type?.componentName === 'ExField';
-        return isExField ? React.cloneElement(field, {
+      {elements.map((field) => {
+        const isExField = (field as any)?.type?.displayName === 'RExField';
+        return isExField ? React.cloneElement(field as ReactElement, {
           form,
           formConfig: {
             initialValues,
             validateOnBlur,
             validateOnChange,
-          },
+          } as Partial<IFormConfig>,
         }) : field;
       })}
     </form>
   );
 };
 
-export const EfxField = ({
+REfxForm.displayName = 'REfxForm';
+
+export const REfxField = ({
   Field,
   form = getForm(formConfigDefault.name),
   name,
-  formConfig: { initialValues, ...formConfig} = formConfigDefault,
+  formConfig: { initialValues = {}, ...formConfig} = omit(formConfigDefault, ['name']),
   initialValue = initialValues[name],
   parse = fieldConfigDefault.parse,
   format = fieldConfigDefault.format,
@@ -55,8 +61,8 @@ export const EfxField = ({
   validateOnBlur,
   validateOnChange,
   ...props
-}) => {
-  const { $value, $errors, onChange, onBlur } = useMemo(() => {
+}: REfxFieldProps) => {
+  const { $value, $errors, onChange, onBlur }: Partial<IField> = useMemo(() => {
     const field = form.fields[name];
     const fieldConfig = {
       name,
@@ -67,7 +73,7 @@ export const EfxField = ({
       validateOnBlur,
       validateOnChange,
       ...formConfig,
-    };
+    } as Omit<IFieldConfig, 'format'>;
     field && (field.config = fieldConfig);
     return field || form.registerField(fieldConfig);
   }, [form, name, initialValue, parse, validators, validateOnBlur, validateOnChange, formConfig]);
@@ -87,4 +93,4 @@ export const EfxField = ({
   );
 };
 
-EfxField.componentName = 'ExField';
+REfxField.displayName = 'RExField';

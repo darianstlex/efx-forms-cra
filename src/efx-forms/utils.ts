@@ -1,4 +1,5 @@
-import { createDomain } from 'effector';
+import { createDomain, Store } from 'effector';
+// @ts-ignore
 import { attachLogger } from 'effector-logger/attach';
 
 export const domain = createDomain('forms');
@@ -9,6 +10,6 @@ attachLogger(domain, {
   reduxDevtools: 'disabled',
 });
 
-export const previous = (store) => store
+export const previous = (store: Store<any>) => store
   .map((curr, last) => ({ last, curr }))
-  .map(({ last: { curr } = {} }) => curr);
+  .map(({ last: { curr = null } = {} }: any) => curr);

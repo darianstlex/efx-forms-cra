@@ -1,6 +1,15 @@
 import './index.css';
 
-export const Input = ({ label, error, errors, onChange, ...rest }) => (
+type TValue = string | number;
+interface InputProps {
+  label: string;
+  error: string;
+  errors: string[];
+  value: TValue;
+  onChange: (value: TValue) => void
+}
+
+export const Input = ({ label, error, errors, onChange, ...rest }: InputProps) => (
   <div className="Input-wrapper">
     <div className="Input-label">{label}</div>
     <input

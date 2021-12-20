@@ -1,6 +1,15 @@
 import './index.css';
 
-export const Checkbox = ({ label, error, errors, value, onChange, ...rest }) => (
+type TValue = boolean;
+interface CheckboxProps {
+  label: string;
+  error: string;
+  errors: string[];
+  value: TValue;
+  onChange: (checked: TValue) => void
+}
+
+export const Checkbox = ({ label, error, errors, value, onChange, ...rest }: CheckboxProps) => (
   <div className="Checkbox-wrapper">
     <div className="Checkbox-field">
       <div className="Checkbox-label">{label}</div>
