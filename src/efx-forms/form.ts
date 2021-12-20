@@ -199,7 +199,7 @@ export const createForm = (config: IFormConfig) => {
 };
 
 /**
- * Return form with given name
+ * Return form with given name or create new one if it doesn't exist
  * @param name
  */
 export const getForm = (name = formConfigDefault.name) => forms[name] || createForm({ name });
