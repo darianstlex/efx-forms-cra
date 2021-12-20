@@ -202,5 +202,5 @@ export const createForm = (config: IFormConfig) => {
  * Return form with given name
  * @param name
  */
-export const getForm = (name = formConfigDefault.name) => forms[name];
+export const getForm = (name = formConfigDefault.name) => forms[name] || createForm({ name });
 
