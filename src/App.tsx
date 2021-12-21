@@ -1,6 +1,6 @@
+import React from 'react';
 import './App.css';
-import { getForm } from './efx-forms';
-import { REfxForm, REfxField } from './efx-forms';
+import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from './components/Input';
 import { Checkbox } from './components/Checkbox';
 
