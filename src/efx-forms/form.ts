@@ -1,6 +1,6 @@
 import { combine, Effect, guard, sample } from 'effector';
-import { domain } from './utils';
-import { isEmpty, set, reduce } from 'lodash';
+import { domain, shapeValues } from './utils';
+import { isEmpty, pickBy } from 'lodash';
 import { createField } from './field';
 import {
   IFormValidationUpdate,
@@ -12,7 +12,6 @@ import {
   IFormValueUpdate,
   IFormOnFieldChange,
   IFormSubmitArgs,
-  IFormSubmitResponseSuccess,
   IFormSubmitResponseError,
   IForms,
   IForm,
@@ -76,46 +75,17 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
   /**
    * Transform values from flat to structured object
    */
-  const $shapedValues = $values.map((values) => reduce(values, (acc, val, key) => set(acc, key, val), {}));
+  const $shapedValues = $values.map((values) => shapeValues(values));
 
   /**
-   * Sync form submit with option to skip validation
+   * Calculate truthy values
    */
-  const submit = ({ cb, skipClientValidation }: IFormSubmitArgs) => {
-    Object.values(fields).forEach(({ validate }) => validate());
-    if ($valid.getState() || skipClientValidation) {
-      cb({
-        values: $values.getState(),
-        shapedValues: $shapedValues.getState(),
-      });
-    }
-  };
+  const $truthyValues = $values.map((values) => pickBy(values, Boolean));
 
   /**
-   * Remote validation form submit with option to skip client validation
-   * cb - is api call for the remote validation, response contains validation
-   * results in format { field1: message, field2: message }, if empty - valid
+   * Transform $truthyValues from flat to structured object
    */
-  const submitRemote: Effect<IFormSubmitArgs, IFormSubmitResponseSuccess, IFormSubmitResponseError> = effect({
-    handler: async ({ cb, skipClientValidation = false }) => {
-      if (!skipClientValidation) {
-        Object.values(fields).forEach(({ validate }) => validate());
-        if (!$valid.getState()) {
-          return Promise.reject({ errors: $validations.getState() });
-        }
-      }
-      const values = {
-        values: $values.getState(),
-        shapedValues: $shapedValues.getState(),
-      };
-      const remoteErrors = await cb(values);
-      if (isEmpty(remoteErrors)) {
-        return Promise.resolve(values);
-      }
-      return Promise.reject({ remoteErrors });
-    },
-    name: `${name}-form-submit`,
-  });
+  const $shapedTruthyValues = $truthyValues.map((values) => shapeValues(values));
 
   /**
    * Common store with all form data
@@ -137,14 +107,59 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
       source: $values,
     }), (_, values) => values);
 
+  /**
+   * Sync form submit with option to skip validation
+   */
+  const submit = ({ cb, skipClientValidation }: IFormSubmitArgs) => {
+    Object.values(fields).forEach(({ validate }) => validate());
+    if ($valid.getState() || skipClientValidation) {
+      cb({
+        shapedTruthyValues: $shapedTruthyValues.getState(),
+        shapedValues: $shapedValues.getState(),
+        truthyValues: $truthyValues.getState(),
+        values: $values.getState(),
+      });
+    }
+  };
+
+  /**
+   * Remote validation form submit with option to skip client validation
+   * cb - is api call for the remote validation, response contains validation
+   * results in format { field1: message, field2: message }, if empty - valid
+   */
+  const submitRemote: Effect<IFormSubmitArgs, void, IFormSubmitResponseError> = effect({
+    handler: async ({ cb, skipClientValidation = false }) => {
+      if (!skipClientValidation) {
+        Object.values(fields).forEach(({ validate }) => validate());
+        if (!$valid.getState()) {
+          return Promise.reject({ errors: $validations.getState() });
+        }
+      }
+      const values = {
+        shapedTruthyValues: $shapedTruthyValues.getState(),
+        shapedValues: $shapedValues.getState(),
+        truthyValues: $truthyValues.getState(),
+        values: $values.getState(),
+      };
+      try {
+        await cb(values);
+      } catch (remoteErrors) {
+        return Promise.reject({ remoteErrors });
+      }
+    },
+    name: `${name}-form-submit`,
+  });
+
   return {
     $changes,
     $shapedValues,
-    $touched,
-    $valid,
-    $values,
+    $shapedTruthyValues,
     $state,
     $submitting: submitRemote.pending,
+    $touched,
+    $truthyValues,
+    $valid,
+    $values,
     name,
     reset,
     submit,
@@ -186,7 +201,7 @@ const createFormHandler = (formConfig: IFormConfig): IForm => {
 };
 
 /**
- * Create/return form with the given name / config
+ * Create/return form with the given name/config
  */
 export const createForm = (config: IFormConfig) => {
   const { name } = config;
@@ -200,7 +215,6 @@ export const createForm = (config: IFormConfig) => {
 
 /**
  * Return form with given name or create new one if it doesn't exist
- * @param name
  */
 export const getForm = (name = formConfigDefault.name) => forms[name] || createForm({ name });
 

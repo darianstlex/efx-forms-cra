@@ -62,13 +62,15 @@ export interface IFormConfig {
   validateOnChange?: boolean;
 }
 
-export interface IFormSubmitResponseSuccess {
-  values: IFormValues;
+export interface IFormSubmitCallbackArgs {
+  shapedTruthyValues: object;
   shapedValues: object;
+  truthyValues: IFormValues;
+  values: IFormValues;
 }
 
 export interface IFormSubmitArgs {
-  cb: (values: IFormSubmitResponseSuccess) => void;
+  cb: (values: IFormSubmitCallbackArgs) => void;
   skipClientValidation?: boolean;
 }
 
@@ -111,15 +113,17 @@ export interface IFormFields {
 export interface IForm {
   $changes: Store<IFormValues>;
   $shapedValues: Store<object>;
-  $touched: Store<boolean>;
-  $valid: Store<boolean>;
-  $values: Store<IFormValues>;
+  $shapedTruthyValues: Store<object>;
   $state: Store<any>;
   $submitting: Store<boolean>;
+  $touched: Store<boolean>;
+  $truthyValues: Store<IFormValues>;
+  $valid: Store<boolean>;
+  $values: Store<IFormValues>;
   name: string;
   reset: Event<void>;
   submit: (args: IFormSubmitArgs) => void;
-  submitRemote: Effect<IFormSubmitArgs, IFormSubmitResponseSuccess, IFormSubmitResponseError>;
+  submitRemote: Effect<IFormSubmitArgs, void, IFormSubmitResponseError>;
   config: IFormConfig;
   fields: IFormFields;
   getField: (name: string) => IField;
