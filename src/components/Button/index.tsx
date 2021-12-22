@@ -13,7 +13,9 @@ export const Button = ({
   ...props
 }: ButtonProps) => (
   <button
-    className={`Button${color === 'primary' ? ' Button-primary' : ''}`}
+    className={[
+      'Button', color === 'primary' ? ' Button-primary' : '',
+    ].join('')}
     {...{ type, ...props }}
   >
     {children}

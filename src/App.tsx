@@ -6,7 +6,6 @@ import './App.css';
 
 export const App = () => {
   const isHome = useMatch('/');
-
   return (
     <div className="App">
       <header className="App-header">
