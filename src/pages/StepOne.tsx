@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from '../components/Input';
 import { required, email, min } from '../utils';
+import {Button} from "../components/Button";
 
 const stepOne = getForm('step-one');
 
 export const StepOne = () => {
+  useEffect(() => () => stepOne.reset());
   const submit = (data: any) => {
     console.log('SUBMIT: ', data);
   };
@@ -46,9 +48,9 @@ export const StepOne = () => {
         type="text"
         validators={[required()]}
       />
-      <button type="submit">Submit</button>
+      <Button type="submit">Submit</Button>
       {' '}
-      <button type="button" onClick={reset}>Reset</button>
+      <Button color="secondary" type="button" onClick={reset}>Reset</Button>
     </REfxForm>
   );
 };

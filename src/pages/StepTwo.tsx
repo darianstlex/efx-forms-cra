@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from '../components/Input';
 import { Checkbox } from '../components/Checkbox';
 import { required, email, min } from '../utils';
+import {Button} from "../components/Button";
 
 const stepTwo = getForm('step-two');
 
 export const StepTwo = () => {
+  useEffect(() => () => stepTwo.reset());
   const remoteSubmit = async () => {
     const api = () => {
       return Promise.reject({ 'customer.name': 'Name is already in use' });
@@ -55,9 +57,9 @@ export const StepTwo = () => {
         type="text"
         validators={[required()]}
       />
-      <button type="button" onClick={remoteSubmit}>Remote Submit</button>
+      <Button type="button" onClick={remoteSubmit}>Remote Submit</Button>
       {' '}
-      <button type="button" onClick={reset}>Reset</button>
+      <Button color="secondary" type="button" onClick={reset}>Reset</Button>
     </REfxForm>
   );
 };
