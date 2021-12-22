@@ -1,10 +1,12 @@
+body {
+  background-color: #282c34;
+}
+
 .App {
   text-align: center;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,7 +16,23 @@
   padding: 30px 0;
 }
 
+.App-nav {
+  display: flex;
+  width: 200px;
+  justify-content: space-between;
+}
+
+.App-nav a {
+  color: white;
+}
+
 .App-form {
   width: 300px;
   margin: auto;
+}
+
+.App-title {
+  font-size: 20px;
+  color: white;
+  margin: 40px 0;
 }
