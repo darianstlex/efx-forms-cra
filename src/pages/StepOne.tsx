@@ -1,19 +1,16 @@
 import React from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from '../components/Input';
+import { required, email, min } from '../utils';
 
-const vehicleForm = getForm('step-one');
-
-const required = (msg = 'Field is required') => (val: string) => !val ? msg : false;
-const email = (msg = 'Not valid email') => (val: string) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? msg : false;
-const min = (min: number, msg = `Should be greater than ${min}`) => (val: number) => val < min ? msg : false;
+const stepOne = getForm('step-one');
 
 export const StepOne = () => {
   const submit = (data: any) => {
     console.log('SUBMIT: ', data);
   };
   const reset = () => {
-    vehicleForm.reset();
+    stepOne.reset();
   };
   return (
     <REfxForm name="step-one" onSubmit={submit} initialValues={{

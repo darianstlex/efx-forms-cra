@@ -2,12 +2,9 @@ import React from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from '../components/Input';
 import { Checkbox } from '../components/Checkbox';
+import { required, email, min } from '../utils';
 
-const vehicleForm = getForm('step-two');
-
-const required = (msg = 'Field is required') => (val: string) => !val ? msg : false;
-const email = (msg = 'Not valid email') => (val: string) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? msg : false;
-const min = (min: number, msg = `Should be greater than ${min}`) => (val: number) => val < min ? msg : false;
+const stepTwo = getForm('step-two');
 
 export const StepTwo = () => {
   const remoteSubmit = async () => {
@@ -15,13 +12,13 @@ export const StepTwo = () => {
       return Promise.reject({ 'customer.name': 'Name is already in use' });
     };
     try {
-      await vehicleForm.submitRemote({ cb: api, skipClientValidation: true });
+      await stepTwo.submitRemote({ cb: api, skipClientValidation: true });
     } catch (e) {
       console.log('REMOTE SUBMIT ERROR: ', e);
     }
   };
   const reset = () => {
-    vehicleForm.reset();
+    stepTwo.reset();
   };
   return (
     <REfxForm name="step-two">
