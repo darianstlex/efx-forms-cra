@@ -9,7 +9,7 @@ import { Code } from 'components/Code';
 const stepTwo = getForm('step-two');
 
 export const StepTwo = () => {
-  useEffect(() => () => stepTwo.reset());
+  useEffect(() => () => stepTwo.reset(), []);
   const remoteSubmit = async () => {
     const api = () => {
       return Promise.reject({ 'customer.name': 'Name is already in use' });

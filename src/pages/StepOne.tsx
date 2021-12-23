@@ -8,7 +8,7 @@ import { Code } from 'components/Code';
 const stepOne = getForm('step-one');
 
 export const StepOne = () => {
-  useEffect(() => () => stepOne.reset());
+  useEffect(() => () => stepOne.reset(), []);
   const submit = (values: IFormValues) => {
     console.log('SUBMIT: ', values);
   };
