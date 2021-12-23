@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react';
-import { getForm, REfxForm, REfxField, IFormValues } from 'efx-forms';
+import { getForm, REfxForm, REfxField, IFormValues, IFormValidations } from 'efx-forms';
 import { Input } from 'components/Input';
 import { required, email, min } from 'utils';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 
 const stepOne = getForm('step-one');
+
+const formValidations: IFormValidations = {
+  'user.name': [required('Form Validation - REQUIRED!')],
+};
 
 export const StepOne = () => {
   useEffect(() => () => stepOne.reset(), []);
@@ -16,16 +20,20 @@ export const StepOne = () => {
     stepOne.reset();
   };
   return (
-    <REfxForm name="step-one" onSubmit={submit} initialValues={{
-      'user.name': 'Tester',
-      'user.age': '34',
-    }}>
+    <REfxForm
+      name="step-one"
+      onSubmit={submit}
+      initialValues={{
+        'user.name': 'Tester',
+        'user.age': '34',
+      }}
+      validations={formValidations}
+    >
       <REfxField
         name="user.name"
         Field={Input}
         label="Name"
         type="text"
-        validators={[required()]}
         initialValue="JustName"
       />
       <REfxField
