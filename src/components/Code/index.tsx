@@ -2,6 +2,7 @@ import React from 'react';
 import { Store } from 'effector';
 import { useStore } from 'effector-react';
 import './index.css';
+import { shapeFy, truthyFy } from 'efx-forms';
 
 interface CodeProps {
   store: Store<any>;
@@ -10,11 +11,17 @@ interface CodeProps {
 
 export const Code = ({ store, title }: CodeProps) => {
   const data = useStore(store);
+  const shape = shapeFy(data);
+  const truthy = truthyFy(data);
+  const truthyShape = shapeFy(truthy);
   return (
     <div className="Code">
       <div className="Code-title">{title}</div>
       <pre className="Code-code">
-        {JSON.stringify(data, undefined, 2)}
+        <div>Default: {JSON.stringify(data, undefined, 2)}</div>
+        <div>Shaped: {JSON.stringify(shape, undefined, 2)}</div>
+        <div>Truthy: {JSON.stringify(truthy, undefined, 2)}</div>
+        <div>Shaped Truthy: {JSON.stringify(truthyShape, undefined, 2)}</div>
       </pre>
     </div>
   );

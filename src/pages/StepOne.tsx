@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import { getForm, REfxForm, REfxField } from 'efx-forms';
+import React, { useEffect } from 'react';
+import { getForm, REfxForm, REfxField, IFormValues } from 'efx-forms';
 import { Input } from 'components/Input';
 import { required, email, min } from 'utils';
 import { Button } from 'components/Button';
@@ -9,8 +9,8 @@ const stepOne = getForm('step-one');
 
 export const StepOne = () => {
   useEffect(() => () => stepOne.reset());
-  const submit = (data: any) => {
-    console.log('SUBMIT: ', data);
+  const submit = (values: IFormValues) => {
+    console.log('SUBMIT: ', values);
   };
   const reset = () => {
     stepOne.reset();
@@ -60,9 +60,6 @@ export const StepOne = () => {
       <Button color="secondary" type="button" onClick={reset}>Reset</Button>
 
       <Code store={stepOne.$values} title="Values" />
-      <Code store={stepOne.$shapedValues} title="Shaped Values" />
-      <Code store={stepOne.$truthyValues} title="Truthy Values" />
-      <Code store={stepOne.$shapedTruthyValues} title="Truthy Shaped Values" />
       <Code store={stepOne.$errors} title="Errors" />
     </REfxForm>
   );

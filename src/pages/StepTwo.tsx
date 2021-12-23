@@ -64,9 +64,6 @@ export const StepTwo = () => {
       <Button color="secondary" type="button" onClick={reset}>Reset</Button>
 
       <Code store={stepTwo.$values} title="Values" />
-      <Code store={stepTwo.$shapedValues} title="Shaped Values" />
-      <Code store={stepTwo.$truthyValues} title="Truthy Values" />
-      <Code store={stepTwo.$shapedTruthyValues} title="Truthy Shaped Values" />
       <Code store={stepTwo.$errors} title="Errors" />
     </REfxForm>
   );
