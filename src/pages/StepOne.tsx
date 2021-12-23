@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
-import { Input } from '../components/Input';
-import { required, email, min } from '../utils';
-import {Button} from "../components/Button";
-import { Code } from '../components/Code';
+import { Input } from 'components/Input';
+import { required, email, min } from 'utils';
+import { Button } from 'components/Button';
+import { Code } from 'components/Code';
 
 const stepOne = getForm('step-one');
 

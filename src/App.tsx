@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Link, useMatch } from 'react-router-dom';
-import { StepOne } from './pages/StepOne';
-import { StepTwo } from './pages/StepTwo';
+import { StepOne } from 'pages/StepOne';
+import { StepTwo } from 'pages/StepTwo';
 import './App.css';
 
 export const App = () => {
