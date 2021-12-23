@@ -47,6 +47,11 @@ export const StepOne = () => {
         Field={Input}
         label="DOB"
         type="date"
+        parse={(date) => new Date(date as string).toISOString()}
+        format={(date) => {
+          const d = new Date(date as string);
+          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }}
         validators={[required()]}
       />
 
