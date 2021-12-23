@@ -3,6 +3,7 @@ import { getForm, REfxForm, REfxField } from 'efx-forms';
 import { Input } from '../components/Input';
 import { required, email, min } from '../utils';
 import {Button} from "../components/Button";
+import { Code } from '../components/Code';
 
 const stepOne = getForm('step-one');
 
@@ -22,7 +23,7 @@ export const StepOne = () => {
       <REfxField
         name="user.name"
         Field={Input}
-        label="User Name"
+        label="Name"
         type="text"
         validators={[required()]}
         initialValue="JustName"
@@ -30,27 +31,34 @@ export const StepOne = () => {
       <REfxField
         name="user.email"
         Field={Input}
-        label="User Email"
+        label="Email"
         type="text"
         validators={[required(), email()]}
       />
       <REfxField
         name="user.age"
         Field={Input}
-        label="User Age"
+        label="Age"
         type="number"
         validators={[min(18)]}
       />
       <REfxField
         name="user.dob"
         Field={Input}
-        label="User DOB"
-        type="text"
+        label="DOB"
+        type="date"
         validators={[required()]}
       />
+
       <Button type="submit">Submit</Button>
-      {' '}
+      {'  '}
       <Button color="secondary" type="button" onClick={reset}>Reset</Button>
+
+      <Code store={stepOne.$values} title="Values" />
+      <Code store={stepOne.$shapedValues} title="Shaped Values" />
+      <Code store={stepOne.$truthyValues} title="Truthy Values" />
+      <Code store={stepOne.$shapedTruthyValues} title="Truthy Shaped Values" />
+      <Code store={stepOne.$errors} title="Errors" />
     </REfxForm>
   );
 };

@@ -4,6 +4,7 @@ import { Input } from '../components/Input';
 import { Checkbox } from '../components/Checkbox';
 import { required, email, min } from '../utils';
 import {Button} from "../components/Button";
+import { Code } from '../components/Code';
 
 const stepTwo = getForm('step-two');
 
@@ -27,14 +28,14 @@ export const StepTwo = () => {
       <REfxField
         name="customer.name"
         Field={Input}
-        label="Customer Name"
+        label="Name"
         type="text"
         validators={[required()]}
       />
       <REfxField
         name="customer.email"
         Field={Input}
-        label="Customer Email"
+        label="Email"
         type="text"
         validators={[required(), email()]}
       />
@@ -46,20 +47,27 @@ export const StepTwo = () => {
       <REfxField
         name="customer.age"
         Field={Input}
-        label="Customer Age"
+        label="Age"
         type="number"
         validators={[min(21)]}
       />
       <REfxField
         name="customer.dob"
         Field={Input}
-        label="Customer DOB"
-        type="text"
+        label="DOB"
+        type="date"
         validators={[required()]}
       />
+
       <Button type="button" onClick={remoteSubmit}>Remote Submit</Button>
-      {' '}
+      {'  '}
       <Button color="secondary" type="button" onClick={reset}>Reset</Button>
+
+      <Code store={stepTwo.$values} title="Values" />
+      <Code store={stepTwo.$shapedValues} title="Shaped Values" />
+      <Code store={stepTwo.$truthyValues} title="Truthy Values" />
+      <Code store={stepTwo.$shapedTruthyValues} title="Truthy Shaped Values" />
+      <Code store={stepTwo.$errors} title="Errors" />
     </REfxForm>
   );
 };
