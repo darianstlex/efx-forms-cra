@@ -6,7 +6,7 @@ import { shapeFy, truthyFy } from 'efx-forms/utils';
 import './index.css';
 
 interface CodeProps {
-  store: Store<any>;
+  store: Store<{}>;
   title: string;
 }
 

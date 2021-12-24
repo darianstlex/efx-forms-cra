@@ -37,13 +37,15 @@ export const StepOne = () => {
       }}
       validations={formValidations}
     >
-      <REfxField
-        name="user.name"
-        Field={Input}
-        label="Name"
-        type="text"
-        initialValue="JustName"
-      />
+      <div>
+        <REfxField
+          name="user.name"
+          Field={Input}
+          label="Name"
+          type="text"
+          initialValue="JustName"
+        />
+      </div>
       <REfxField
         name="user.email"
         Field={Input}
@@ -52,6 +54,7 @@ export const StepOne = () => {
         validators={[required(), email()]}
       />
       <REfxField
+        formName="step-two"
         name="user.age"
         Field={Input}
         label="Age"
@@ -59,6 +62,7 @@ export const StepOne = () => {
         validators={[min({ value: 18 })]}
       />
       <REfxField
+        validateOnChange
         name="user.dob"
         Field={Input}
         label="DOB"
