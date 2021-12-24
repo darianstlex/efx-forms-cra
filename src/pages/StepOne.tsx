@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { getForm, REfxForm, REfxField, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
-import { required, email, min } from 'efx-forms/dist/validators';
+import { getForm, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
+import { REfxForm, REfxField } from 'efx-forms/react';
+import { required, email, min } from 'efx-forms/validators';
+
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';

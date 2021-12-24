@@ -1,8 +1,9 @@
 import React from 'react';
 import { Store } from 'effector';
 import { useStore } from 'effector-react';
+import { shapeFy, truthyFy } from 'efx-forms/utils';
+
 import './index.css';
-import { shapeFy, truthyFy } from 'efx-forms';
 
 interface CodeProps {
   store: Store<any>;
