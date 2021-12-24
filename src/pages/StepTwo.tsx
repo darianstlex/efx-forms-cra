@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import { getForm, REfxForm, REfxField } from 'efx-forms';
+import { required, email, min } from 'efx-forms/dist/validators';
 import { Input } from 'components/Input';
 import { Checkbox } from 'components/Checkbox';
-import { required, email, min } from 'utils';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 
@@ -49,7 +49,7 @@ export const StepTwo = () => {
         Field={Input}
         label="Age"
         type="number"
-        validators={[min(21)]}
+        validators={[min({ value: 21 })]}
       />
       <REfxField
         name="customer.dob"

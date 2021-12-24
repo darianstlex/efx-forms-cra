@@ -1,14 +1,20 @@
 import React, { useEffect } from 'react';
-import { getForm, REfxForm, REfxField, IFormValues, IFormValidations } from 'efx-forms';
+import { getForm, REfxForm, REfxField, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
+import { required, email, min } from 'efx-forms/dist/validators';
 import { Input } from 'components/Input';
-import { required, email, min } from 'utils';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 
 const stepOne = getForm('step-one');
 
 const formValidations: IFormValidations = {
-  'user.name': [required('Form Validation - REQUIRED!')],
+  'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
+};
+
+const parseISO = (date: TFieldValue) => new Date(date as string).toISOString();
+const formatISO = (date: TFieldValue) => {
+  const d = new Date(date as string);
+  return date ? `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` : '';
 };
 
 export const StepOne = () => {
@@ -48,18 +54,15 @@ export const StepOne = () => {
         Field={Input}
         label="Age"
         type="number"
-        validators={[min(18)]}
+        validators={[min({ value: 18 })]}
       />
       <REfxField
         name="user.dob"
         Field={Input}
         label="DOB"
         type="date"
-        parse={(date) => new Date(date as string).toISOString()}
-        format={(date) => {
-          const d = new Date(date as string);
-          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        }}
+        parse={parseISO}
+        format={formatISO}
         validators={[required()]}
       />
 
