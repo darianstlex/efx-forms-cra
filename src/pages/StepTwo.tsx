@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { getForm } from 'efx-forms';
-import { REfxForm, REfxField } from 'efx-forms/react';
+import { REfxForm, REfxField, REfxWhen } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -53,6 +53,19 @@ export const StepTwo = () => {
         type="number"
         validators={[min({ value: 21 })]}
       />
+      <REfxWhen
+        check={(values: any) => Number(values['customer.age']) > 20 }
+        setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
+        resetTo={{ 'customer.salary': '100' }}
+        updateDebounce={500}
+      >
+        <REfxField
+          name="customer.salary"
+          Field={Input}
+          label="Salary"
+          type="text"
+        />
+      </REfxWhen>
       <REfxField
         name="customer.dob"
         Field={Input}
