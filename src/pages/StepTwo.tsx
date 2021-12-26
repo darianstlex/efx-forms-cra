@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { getForm } from 'efx-forms';
 import { REfxForm, REfxField, REfxWhen } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
@@ -11,7 +11,6 @@ import { Code } from 'components/Code';
 const stepTwo = getForm('step-two');
 
 export const StepTwo = () => {
-  useEffect(() => () => stepTwo.reset(), []);
   const remoteSubmit = async () => {
     const api = () => {
       return Promise.reject({ 'customer.name': 'Name is already in use' });
@@ -57,7 +56,7 @@ export const StepTwo = () => {
         check={(values: any) => Number(values['customer.age']) > 20 }
         setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
         resetTo={{ 'customer.salary': '100' }}
-        updateDebounce={500}
+        updateDebounce={0}
       >
         <REfxField
           name="customer.salary"

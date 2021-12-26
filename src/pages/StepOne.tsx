@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { getForm, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
 import { REfxForm, REfxField } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
@@ -20,7 +20,6 @@ const formatISO = (date: TFieldValue) => {
 };
 
 export const StepOne = () => {
-  useEffect(() => () => stepOne.reset(), []);
   const submit = (values: IFormValues) => {
     console.log('SUBMIT: ', values);
   };
@@ -29,6 +28,7 @@ export const StepOne = () => {
   };
   return (
     <REfxForm
+      keepFormOnUnmount
       name="step-one"
       onSubmit={submit}
       initialValues={{
@@ -54,7 +54,6 @@ export const StepOne = () => {
         validators={[required(), email()]}
       />
       <REfxField
-        formName="step-two"
         name="user.age"
         Field={Input}
         label="Age"
