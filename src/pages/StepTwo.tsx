@@ -1,6 +1,6 @@
 import React from 'react';
 import { getForm } from 'efx-forms';
-import { REfxForm, REfxField, REfxWhen } from 'efx-forms/react';
+import { Form, Field, DisplayWhen } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -25,47 +25,47 @@ export const StepTwo = () => {
     stepTwo.reset();
   };
   return (
-    <REfxForm name="step-two">
-      <REfxField
+    <Form name="step-two">
+      <Field
         name="customer.name"
         Field={Input}
         label="Name"
         type="text"
         validators={[required()]}
       />
-      <REfxField
+      <Field
         name="customer.email"
         Field={Input}
         label="Email"
         type="text"
         validators={[required(), email()]}
       />
-      <REfxField
+      <Field
         name="customer.canTransact"
         Field={Checkbox}
         label="Can Transact"
       />
-      <REfxField
+      <Field
         name="customer.age"
         Field={Input}
         label="Age"
         type="number"
         validators={[min({ value: 21 })]}
       />
-      <REfxWhen
+      <DisplayWhen
         check={(values: any) => Number(values['customer.age']) > 20 }
         setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
         resetTo={{ 'customer.salary': '100' }}
         updateDebounce={0}
       >
-        <REfxField
+        <Field
           name="customer.salary"
           Field={Input}
           label="Salary"
           type="text"
         />
-      </REfxWhen>
-      <REfxField
+      </DisplayWhen>
+      <Field
         name="customer.dob"
         Field={Input}
         label="DOB"
@@ -79,6 +79,6 @@ export const StepTwo = () => {
 
       <Code store={stepTwo.$values} title="Values" />
       <Code store={stepTwo.$errors} title="Errors" />
-    </REfxForm>
+    </Form>
   );
 };

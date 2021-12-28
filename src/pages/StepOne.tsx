@@ -1,8 +1,9 @@
 import React from 'react';
 import { getForm, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
-import { REfxForm, REfxField } from 'efx-forms/react';
+import { Form, Field } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
+import { FormStoreLogger } from 'components/FormStoreLogger';
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
@@ -27,18 +28,19 @@ export const StepOne = () => {
     stepOne.reset();
   };
   return (
-    <REfxForm
+    <Form
       keepFormOnUnmount
       name="step-one"
       onSubmit={submit}
       initialValues={{
-        'user.name': 'Tester',
+        'user.name': 'StoreLogger',
         'user.age': '34',
       }}
       validations={formValidations}
     >
+      <FormStoreLogger store="$errors" />
       <div>
-        <REfxField
+        <Field
           name="user.name"
           Field={Input}
           label="Name"
@@ -46,21 +48,21 @@ export const StepOne = () => {
           initialValue="JustName"
         />
       </div>
-      <REfxField
+      <Field
         name="user.email"
         Field={Input}
         label="Email"
         type="text"
         validators={[required(), email()]}
       />
-      <REfxField
+      <Field
         name="user.age"
         Field={Input}
         label="Age"
         type="number"
         validators={[min({ value: 18 })]}
       />
-      <REfxField
+      <Field
         validateOnChange
         name="user.dob"
         Field={Input}
@@ -77,6 +79,6 @@ export const StepOne = () => {
 
       <Code store={stepOne.$values} title="Values" />
       <Code store={stepOne.$errors} title="Errors" />
-    </REfxForm>
+    </Form>
   );
 };
