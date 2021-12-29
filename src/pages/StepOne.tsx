@@ -8,7 +8,7 @@ import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 
-const stepOne = getForm('step-one');
+const stepOne = getForm('stepOne');
 
 const formValidations: IFormValidations = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
@@ -30,7 +30,7 @@ export const StepOne = () => {
   return (
     <Form
       keepFormOnUnmount
-      name="step-one"
+      name="stepOne"
       onSubmit={submit}
       initialValues={{
         'user.name': 'StoreLogger',

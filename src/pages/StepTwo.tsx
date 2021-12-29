@@ -8,7 +8,7 @@ import { Checkbox } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 
-const stepTwo = getForm('step-two');
+const stepTwo = getForm('stepTwo');
 
 export const StepTwo = () => {
   const remoteSubmit = async () => {
@@ -25,7 +25,7 @@ export const StepTwo = () => {
     stepTwo.reset();
   };
   return (
-    <Form name="step-two">
+    <Form name="stepTwo">
       <Field
         name="customer.name"
         Field={Input}
