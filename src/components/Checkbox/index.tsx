@@ -4,18 +4,21 @@ import styles from './index.module.scss';
 
 type TValue = boolean;
 interface CheckboxProps {
+  id: string;
+  name: string;
   label: string;
   error: string;
   errors: string[];
   value: TValue;
-  onChange: (checked: TValue) => void
+  onChange: (checked: TValue) => void;
 }
 
-export const Checkbox = ({ label, error, errors, value, onChange, ...rest }: CheckboxProps) => (
+export const Checkbox = ({ id, label, error, errors, value, onChange, name, ...rest }: CheckboxProps) => (
   <div className={styles.wrapper}>
     <div className={styles.field}>
-      <div className={styles.label}>{label}</div>
+      <label htmlFor={id || name} className={styles.label}>{label}</label>
       <input
+        id={id || name}
         type="checkbox"
         className={styles.input}
         checked={value}

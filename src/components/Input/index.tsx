@@ -4,6 +4,8 @@ import styles from './index.module.scss';
 
 type TValue = string | number;
 interface InputProps {
+  id: string;
+  name: string;
   label: string;
   error: string;
   errors: string[];
@@ -11,11 +13,12 @@ interface InputProps {
   onChange: (value: TValue) => void
 }
 
-export const Input = ({ label, error, errors, onChange, ...rest }: InputProps) => (
+export const Input = ({ id, label, error, errors, onChange, name,  ...rest }: InputProps) => (
   <div className={styles.wrapper}>
-    <div className={styles.label}>{label}</div>
+    <label htmlFor={id || name}>{label}</label>
     <input
-      className={styles.field}
+      id={id || name}
+      className={styles.input}
       onChange={(e) => onChange(e.target.value)}
       {...rest}
     />

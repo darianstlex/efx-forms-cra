@@ -1,6 +1,7 @@
 .wrapper {
   padding: 0 0 24px 0;
   position: relative;
+  font-size: 1rem;
 
   .field {
     display: flex;
@@ -8,12 +9,11 @@
     align-items: center;
 
     .label {
-      font-size: 16px;
       text-align: left;
     }
 
     .input {
-      font-size: 16px;
+      font-size: inherit;
       height: 24px;
       width: 24px;
       margin: 12px 0;
@@ -21,10 +21,10 @@
   }
 
   .error {
-    font-size: 12px;
+    font-size: .75rem;
     color: #d91c78;
     position: absolute;
-    top: 57px;
+    top: 53px;
     left: 0;
   }
 }
