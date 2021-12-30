@@ -1,5 +1,6 @@
 import React from 'react';
-import './index.css';
+
+import styles from './index.module.scss';
 
 type TValue = string | number;
 interface InputProps {
@@ -11,13 +12,13 @@ interface InputProps {
 }
 
 export const Input = ({ label, error, errors, onChange, ...rest }: InputProps) => (
-  <div className="Input-wrapper">
-    <div className="Input-label">{label}</div>
+  <div className={styles.wrapper}>
+    <div className={styles.label}>{label}</div>
     <input
-      className="Input-field"
+      className={styles.field}
       onChange={(e) => onChange(e.target.value)}
       {...rest}
     />
-    {error && <span className="Input-error">{error}</span>}
+    {error && <span className={styles.error}>{error}</span>}
   </div>
 );

@@ -3,7 +3,7 @@ import { Store } from 'effector';
 import { useStore } from 'effector-react';
 import { shapeFy, truthyFy } from 'efx-forms/utils';
 
-import './index.css';
+import styles from './index.module.scss';
 
 interface CodeProps {
   store: Store<{}>;
@@ -16,9 +16,9 @@ export const Code = ({ store, title }: CodeProps) => {
   const truthy = truthyFy(data);
   const truthyShape = shapeFy(truthy);
   return (
-    <div className="Code">
-      <div className="Code-title">{title}</div>
-      <pre className="Code-code">
+    <div className={styles.wrapper}>
+      <div className={styles.title}>{title}</div>
+      <pre className={styles.code}>
         <div>Default: {JSON.stringify(data, undefined, 2)}</div>
         <div>Shaped: {JSON.stringify(shape, undefined, 2)}</div>
         <div>Truthy: {JSON.stringify(truthy, undefined, 2)}</div>

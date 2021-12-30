@@ -73,9 +73,9 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <Button type="button" onClick={remoteSubmit}>Remote Submit</Button>
+      <Button onClick={remoteSubmit}>Remote Submit</Button>
       {'  '}
-      <Button color="secondary" type="button" onClick={reset}>Reset</Button>
+      <Button secondary onClick={reset}>Reset</Button>
 
       <Code store={stepTwo.$values} title="Values" />
       <Code store={stepTwo.$errors} title="Errors" />

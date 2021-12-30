@@ -1,20 +1,22 @@
 import React from 'react';
 import { Routes, Route, Link, useMatch } from 'react-router-dom';
+
 import { StepOne } from 'pages/StepOne';
 import { StepTwo } from 'pages/StepTwo';
-import './App.css';
+
+import styles from './App.module.scss';
 
 export const App = () => {
   const isHome = useMatch('/');
   return (
-    <div className="App">
-      <header className="App-header">
-        <nav className="App-nav">
+    <div className={styles.wrapper}>
+      <header className={styles.header}>
+        <nav className={styles.nav}>
           <Link to="/">{isHome ? 'Here' : 'There'}</Link>
           <Link to="/two">{isHome ? 'There' : 'Here'}</Link>
         </nav>
-        <div className="App-title">{isHome ? 'User Form' : 'Customer Form'}</div>
-        <div className="App-form">
+        <div className={styles.title}>{isHome ? 'User Form' : 'Customer Form'}</div>
+        <div className={styles.form}>
           <Routes>
             <Route element={<StepOne />} path="/" />
             <Route element={<StepTwo />} path="/two" />

@@ -1,5 +1,6 @@
 import React from 'react';
-import './index.css';
+
+import styles from './index.module.scss';
 
 type TValue = boolean;
 interface CheckboxProps {
@@ -11,17 +12,17 @@ interface CheckboxProps {
 }
 
 export const Checkbox = ({ label, error, errors, value, onChange, ...rest }: CheckboxProps) => (
-  <div className="Checkbox-wrapper">
-    <div className="Checkbox-field">
-      <div className="Checkbox-label">{label}</div>
+  <div className={styles.wrapper}>
+    <div className={styles.field}>
+      <div className={styles.label}>{label}</div>
       <input
         type="checkbox"
-        className="Checkbox-input"
+        className={styles.input}
         checked={value}
         onChange={(e) => onChange(e.target.checked)}
         {...rest}
       />
     </div>
-    {error && <span className="Checkbox-error">{error}</span>}
+    {error && <span className={styles.error}>{error}</span>}
   </div>
 );

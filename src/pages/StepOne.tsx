@@ -75,7 +75,7 @@ export const StepOne = () => {
 
       <Button type="submit">Submit</Button>
       {'  '}
-      <Button color="secondary" type="button" onClick={reset}>Reset</Button>
+      <Button secondary onClick={reset}>Reset</Button>
 
       <Code store={stepOne.$values} title="Values" />
       <Code store={stepOne.$errors} title="Errors" />

@@ -1,0 +1,18 @@
+.button {
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 3px;
+  font-weight: bold;
+  background-color: #005177;
+  color: white;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.secondary {
+    background-color: white;
+    color: black;
+  }
+}

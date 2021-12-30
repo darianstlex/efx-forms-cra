@@ -1,21 +1,20 @@
 import React, { ReactNode } from 'react';
-import './index.css';
+
+import styles from './index.module.scss';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>{
   children: ReactNode;
-  color?: 'primary' | 'secondary';
+  secondary?: boolean;
 }
 
 export const Button = ({
   children,
-  color = 'primary',
+  secondary = false,
   type = 'button',
   ...props
 }: ButtonProps) => (
   <button
-    className={[
-      'Button', color === 'primary' ? ' Button-primary' : '',
-    ].join('')}
+    className={[styles.button, secondary ? styles.secondary : ''].join(' ')}
     {...{ type, ...props }}
   >
     {children}
