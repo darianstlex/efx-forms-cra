@@ -1,5 +1,5 @@
 import React from 'react';
-import { getForm, IFormValues, IFormValidations, TFieldValue } from 'efx-forms';
+import { getForm, IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
 import { Form, Field } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
@@ -10,7 +10,7 @@ import { Code } from 'components/Code';
 
 const stepOne = getForm('stepOne');
 
-const formValidations: IFormValidations = {
+const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
 };
 
@@ -36,7 +36,7 @@ export const StepOne = () => {
         'user.name': 'StoreLogger',
         'user.age': '34',
       }}
-      validations={formValidations}
+      validators={formValidators}
     >
       <FormStoreLogger store="$errors" />
       <div>
