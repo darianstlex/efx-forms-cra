@@ -14,7 +14,7 @@ const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
 };
 
-const parseISO = (date: string): TFieldValue => new Date(date as string).toISOString();
+const parseISO = (date: string): TFieldValue => new Date(date).toISOString();
 const formatISO = (date: TFieldValue) => {
   const d = new Date(date as string);
   return date ? `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` : '';
@@ -29,7 +29,7 @@ export const StepOne = () => {
   };
   return (
     <Form
-      keepFormOnUnmount
+      keepOnUnmount
       name="stepOne"
       onSubmit={submit}
       initialValues={{

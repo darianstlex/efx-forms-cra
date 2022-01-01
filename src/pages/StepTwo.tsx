@@ -1,5 +1,5 @@
 import React from 'react';
-import { getForm } from 'efx-forms';
+import { getForm, IFormValues } from 'efx-forms';
 import { Form, Field, DisplayWhen } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
@@ -11,21 +11,15 @@ import { Code } from 'components/Code';
 const stepTwo = getForm('stepTwo');
 
 export const StepTwo = () => {
-  const remoteSubmit = async () => {
-    const api = () => {
-      return Promise.reject({ 'customer.name': 'Name is already in use' });
-    };
-    try {
-      await stepTwo.submitRemote({ cb: api, skipClientValidation: true });
-    } catch (e) {
-      console.log('REMOTE SUBMIT ERROR: ', e);
-    }
+  const submit = async (values: IFormValues) => {
+    console.log('SUBMIT: ', values);
+    return Promise.reject({ 'customer.name': 'Name is already in use' });
   };
   const reset = () => {
     stepTwo.reset();
   };
   return (
-    <Form name="stepTwo">
+    <Form name="stepTwo" onSubmit={submit}>
       <Field
         name="customer.name"
         Field={Input}
@@ -41,6 +35,7 @@ export const StepTwo = () => {
         validators={[required(), email()]}
       />
       <Field
+        initialValue={false}
         name="customer.canTransact"
         Field={Checkbox}
         label="Can Transact"
@@ -73,7 +68,7 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <Button onClick={remoteSubmit}>Remote Submit</Button>
+      <Button type="submit">Submit</Button>
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>
 
