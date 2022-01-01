@@ -11,6 +11,12 @@
     cursor: pointer;
   }
 
+  &:disabled {
+    background-color: #505657;
+    color: #8f8f8f;
+    cursor: not-allowed;
+  }
+
   &.secondary {
     background-color: white;
     color: black;

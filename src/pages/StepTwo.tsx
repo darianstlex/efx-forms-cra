@@ -7,11 +7,16 @@ import { Input } from 'components/Input';
 import { Checkbox } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
+import { FormStoreLogger } from '../components/FormStoreLogger';
+import { FormDataProvider } from '../components/FormDataProvider';
 
 const stepTwo = getForm('stepTwo');
 
+const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
+
 export const StepTwo = () => {
   const submit = async (values: IFormValues) => {
+    await wait(2000);
     console.log('SUBMIT: ', values);
     return Promise.reject({ 'customer.name': 'Name is already in use' });
   };
@@ -20,6 +25,7 @@ export const StepTwo = () => {
   };
   return (
     <Form name="stepTwo" onSubmit={submit}>
+      <FormStoreLogger store="$submitting" />
       <Field
         name="customer.name"
         Field={Input}
@@ -68,7 +74,9 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <Button type="submit">Submit</Button>
+      <FormDataProvider store="$submitting">
+        {(value) => <Button disabled={value} type="submit">Submit</Button>}
+      </FormDataProvider>
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>
 
