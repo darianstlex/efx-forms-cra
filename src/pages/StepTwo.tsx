@@ -1,6 +1,6 @@
 import React from 'react';
 import { getForm, IFormValues } from 'efx-forms';
-import { Form, Field, DisplayWhen } from 'efx-forms/react';
+import { Form, Field, DisplayWhen, FormDataProvider } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -8,7 +8,6 @@ import { Checkbox } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { FormStoreLogger } from '../components/FormStoreLogger';
-import { FormDataProvider } from '../components/FormDataProvider';
 
 const stepTwo = getForm('stepTwo');
 
@@ -74,8 +73,8 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <FormDataProvider store="$submitting">
-        {(value) => <Button disabled={value} type="submit">Submit</Button>}
+      <FormDataProvider stores={['$submitting']}>
+        {([submitting]) => <Button disabled={submitting} type="submit">Submit</Button>}
       </FormDataProvider>
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>

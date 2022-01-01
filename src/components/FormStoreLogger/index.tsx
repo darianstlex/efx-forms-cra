@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
-import { useFormStoreValue } from 'efx-forms/react';
+import { useFormStore } from 'efx-forms/react';
+import { TFormStoreKey } from 'efx-forms/model';
 
 interface StoreLoggerProps {
-  store: string;
+  store: TFormStoreKey;
 }
 
 export const FormStoreLogger = ({ store }: StoreLoggerProps) => {
-  const values = useFormStoreValue(store);
+  const values = useFormStore(store);
   useEffect(() => {
     console.log(`FORM_STORE - ${store}: `, values);
   }, [store, values]);

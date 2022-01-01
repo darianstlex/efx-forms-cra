@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@types/lodash": "^4.14.178",
     "effector": "^22.1.2",
     "effector-logger": "^0.13.1",
     "effector-react": "^22.0.6",
-    "efx-forms": "^0.6.1",
+    "efx-forms": "^0.7.3",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
