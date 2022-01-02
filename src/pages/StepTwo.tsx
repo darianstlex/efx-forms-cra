@@ -7,7 +7,7 @@ import { Input } from 'components/Input';
 import { Checkbox } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
-import { FormStoreLogger } from '../components/FormStoreLogger';
+import { FormStoreLogger } from 'components/FormStoreLogger';
 
 const stepTwo = getForm('stepTwo');
 
@@ -74,7 +74,14 @@ export const StepTwo = () => {
       />
 
       <FormDataProvider stores={['$submitting', '$valid']}>
-        {([submitting, valid]) => <Button disabled={submitting || !valid} type="submit">Submit</Button>}
+        {([submitting, valid]) => (
+          <Button
+            disabled={submitting || !valid}
+            type="submit"
+          >
+            {submitting ? 'Busy...' : 'Submit'}
+          </Button>
+        )}
       </FormDataProvider>
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>

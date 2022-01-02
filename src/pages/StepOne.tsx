@@ -7,6 +7,7 @@ import { FormStoreLogger } from 'components/FormStoreLogger';
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
+import { Select } from 'components/Select';
 
 const stepOne = getForm('stepOne');
 
@@ -19,6 +20,14 @@ const formatISO = (date: TFieldValue) => {
   const d = new Date(date as string);
   return date ? `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` : '';
 };
+
+const carOptions = [
+  { value: '', label: 'Not Selected' },
+  { value: 'volvo', label: 'Volvo' },
+  { value: 'saab', label: 'Saab' },
+  { value: 'mercedes', label: 'Mercedes' },
+  { value: 'audi', label: 'Audi' },
+];
 
 export const StepOne = () => {
   const submit = (values: IFormValues) => {
@@ -40,7 +49,9 @@ export const StepOne = () => {
     >
       <FormStoreLogger store="$errors" />
       <FieldDataProvider name="user.name" stores={['$value', '$dirty']}>
-        {([value, dirty]) => <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>}
+        {([value, dirty]) => (
+          <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>
+        )}
       </FieldDataProvider>
       <div>
         <Field
@@ -64,6 +75,13 @@ export const StepOne = () => {
         label="Age"
         type="number"
         validators={[min({ value: 18 })]}
+      />
+      <Field
+        name="user.car"
+        Field={Select}
+        label="Car"
+        options={carOptions}
+        validators={[required()]}
       />
       <Field
         validateOnChange
