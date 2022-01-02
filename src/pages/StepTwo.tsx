@@ -79,6 +79,7 @@ export const StepTwo = () => {
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>
 
+      <Code store={stepTwo.$actives} title="Active Values" />
       <Code store={stepTwo.$values} title="Values" />
       <Code store={stepTwo.$errors} title="Errors" />
     </Form>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { getForm, IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
-import { Form, Field } from 'efx-forms/react';
+import { Form, Field, FieldDataProvider } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { FormStoreLogger } from 'components/FormStoreLogger';
@@ -39,6 +39,9 @@ export const StepOne = () => {
       validators={formValidators}
     >
       <FormStoreLogger store="$errors" />
+      <FieldDataProvider name="user.name" stores={['$value', '$dirty']}>
+        {([value, dirty]) => <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>}
+      </FieldDataProvider>
       <div>
         <Field
           name="user.name"
