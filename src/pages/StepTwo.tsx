@@ -73,8 +73,8 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <FormDataProvider stores={['$submitting']}>
-        {([submitting]) => <Button disabled={submitting} type="submit">Submit</Button>}
+      <FormDataProvider stores={['$submitting', '$valid']}>
+        {([submitting, valid]) => <Button disabled={submitting || !valid} type="submit">Submit</Button>}
       </FormDataProvider>
       {'  '}
       <Button secondary onClick={reset}>Reset</Button>
