@@ -1,6 +1,6 @@
 import React from 'react';
-import { getForm, IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
-import { Form, Field, FieldDataProvider } from 'efx-forms/react';
+import { IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
+import { Form, Field, FieldDataProvider, useForm } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { FormStoreLogger } from 'components/FormStoreLogger';
@@ -8,8 +8,6 @@ import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { Select } from 'components/Select';
-
-const stepOne = getForm('stepOne');
 
 const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
@@ -30,12 +28,12 @@ const carOptions = [
 ];
 
 export const StepOne = () => {
+  const form = useForm('stepOne');
+
   const submit = (values: IFormValues) => {
     console.log('SUBMIT: ', values);
   };
-  const reset = () => {
-    stepOne.reset();
-  };
+
   return (
     <Form
       keepOnUnmount
@@ -96,10 +94,10 @@ export const StepOne = () => {
 
       <Button type="submit">Submit</Button>
       {'  '}
-      <Button secondary onClick={reset}>Reset</Button>
+      <Button secondary onClick={() => form.reset()}>Reset</Button>
 
-      <Code store={stepOne.$values} title="Values" />
-      <Code store={stepOne.$errors} title="Errors" />
+      <Code store={form.$values} title="Values" />
+      <Code store={form.$errors} title="Errors" />
     </Form>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { getForm, IFormValues } from 'efx-forms';
-import { Form, Field, DisplayWhen, FormDataProvider } from 'efx-forms/react';
+import { IFormValues } from 'efx-forms';
+import { Form, Field, DisplayWhen, FormDataProvider, useForm } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -9,19 +9,17 @@ import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { FormStoreLogger } from 'components/FormStoreLogger';
 
-const stepTwo = getForm('stepTwo');
-
 const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
 export const StepTwo = () => {
+  const form = useForm('stepTwo');
+
   const submit = async (values: IFormValues) => {
     await wait(2000);
     console.log('SUBMIT: ', values);
     return Promise.reject({ 'customer.name': 'Name is already in use' });
   };
-  const reset = () => {
-    stepTwo.reset();
-  };
+
   return (
     <Form name="stepTwo" onSubmit={submit}>
       <FormStoreLogger store="$submitting" />
@@ -45,15 +43,8 @@ export const StepTwo = () => {
         Field={Checkbox}
         label="Can Transact"
       />
-      <Field
-        name="customer.age"
-        Field={Input}
-        label="Age"
-        type="number"
-        validators={[min({ value: 21 })]}
-      />
       <DisplayWhen
-        check={(values: any) => Number(values['customer.age']) > 20 }
+        check={(values: any) => values['customer.canTransact']}
         setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
         resetTo={{ 'customer.salary': '100' }}
         updateDebounce={0}
@@ -65,6 +56,13 @@ export const StepTwo = () => {
           type="text"
         />
       </DisplayWhen>
+      <Field
+        name="customer.age"
+        Field={Input}
+        label="Age"
+        type="number"
+        validators={[min({ value: 21 })]}
+      />
       <Field
         name="customer.dob"
         Field={Input}
@@ -84,11 +82,11 @@ export const StepTwo = () => {
         )}
       </FormDataProvider>
       {'  '}
-      <Button secondary onClick={reset}>Reset</Button>
+      <Button secondary onClick={() => form.reset()}>Reset</Button>
 
-      <Code store={stepTwo.$actives} title="Active Values" />
-      <Code store={stepTwo.$values} title="Values" />
-      <Code store={stepTwo.$errors} title="Errors" />
+      <Code store={form.$actives} title="Active Values" />
+      <Code store={form.$values} title="Values" />
+      <Code store={form.$errors} title="Errors" />
     </Form>
   );
 };
