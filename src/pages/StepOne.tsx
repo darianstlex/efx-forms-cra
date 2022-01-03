@@ -1,6 +1,6 @@
 import React from 'react';
 import { IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
-import { Form, Field, FieldDataProvider, useForm } from 'efx-forms/react';
+import { Form, Field, FieldDataProvider, useForm, FieldsValueProvider } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { FormStoreLogger } from 'components/FormStoreLogger';
@@ -8,6 +8,15 @@ import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { Select } from 'components/Select';
+import {
+  UseFieldStore,
+  UseFieldStores,
+  UseFieldsValue,
+  UseFieldValue,
+  UseFormStore,
+  UseFormStores,
+  UseFormValues,
+} from 'components/Hooks';
 
 const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
@@ -16,7 +25,7 @@ const formValidators: IFormValidators = {
 const parseISO = (date: string): TFieldValue => new Date(date).toISOString();
 const formatISO = (date: TFieldValue) => {
   const d = new Date(date as string);
-  return date ? `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` : '';
+  return date ? `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + (d.getDate() + 1)).slice(-2)}` : '';
 };
 
 const carOptions = [
@@ -51,6 +60,32 @@ export const StepOne = () => {
           <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>
         )}
       </FieldDataProvider>
+      <FieldsValueProvider fields={['user.email', 'user.age']}>
+        {([email, age]: any) => (
+          <div>Email-Age: {email} - {age}</div>
+        )}
+      </FieldsValueProvider>
+      <UseFormStores
+        title="Use Form Stores - actives/errors"
+        stores={['$actives', '$errors']}
+      />
+      <UseFormValues title="Use Form Values" />
+      <UseFormStore title="Use Form Store - valid" store="$valid"/>
+      <UseFieldValue title="Use Field Value - user.name" field="user.name" />
+      <UseFieldStore
+        title="Use Field Store - user.age - $value"
+        name="user.age"
+        store="$value"
+      />
+      <UseFieldStores
+        title="Use Field Stores - user.email - [$value, $errors]"
+        name="user.email"
+        stores={['$value', '$errors']}
+      />
+      <UseFieldsValue
+        title="Use Fields Values - [user.name, user.email]"
+        fields={['user.name', 'user.email']}
+      />
       <div>
         <Field
           name="user.name"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IFormValues } from 'efx-forms';
-import { Form, Field, DisplayWhen, FormDataProvider, useForm } from 'efx-forms/react';
+import { Form, Field, IfFormValues, FormDataProvider, useForm, IfFieldsValue } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -43,7 +43,7 @@ export const StepTwo = () => {
         Field={Checkbox}
         label="Can Transact"
       />
-      <DisplayWhen
+      <IfFormValues
         check={(values: any) => values['customer.canTransact']}
         setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
         resetTo={{ 'customer.salary': '100' }}
@@ -55,7 +55,13 @@ export const StepTwo = () => {
           label="Salary"
           type="text"
         />
-      </DisplayWhen>
+      </IfFormValues>
+      <IfFieldsValue
+        fields={['customer.age', 'customer.canTransact']}
+        check={([age, canTransact]) => Number(age) > 21 && canTransact}
+      >
+        <div>Good Customer!</div>
+      </IfFieldsValue>
       <Field
         name="customer.age"
         Field={Input}
