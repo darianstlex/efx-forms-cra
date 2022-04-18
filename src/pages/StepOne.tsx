@@ -1,5 +1,5 @@
 import React from 'react';
-import { IFormValues, IFormValidators, TFieldValue } from 'efx-forms';
+import { IFormValues, IFormValidators, TFieldValue, TFieldValidator } from 'efx-forms';
 import { Form, Field, FieldDataProvider, useForm, FieldsValueProvider } from 'efx-forms/react';
 import { required, email, min } from 'efx-forms/validators';
 
@@ -17,6 +17,9 @@ import {
   UseFormStores,
   UseFormValues,
 } from 'components/Hooks';
+
+export const nameAndAge = ({ msg = 'Name and age are required' } = {}): TFieldValidator =>
+  (val: string, { 'user.name': userName }: IFormValues) => !val || !userName ? msg : false;
 
 const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
@@ -107,7 +110,7 @@ export const StepOne = () => {
         Field={Input}
         label="Age"
         type="number"
-        validators={[min({ value: 18 })]}
+        validators={[nameAndAge(), min({ value: 18 })]}
       />
       <Field
         name="user.car"
