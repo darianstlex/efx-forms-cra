@@ -1,22 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-// @ts-ignore
-import { attachLogger } from 'effector-logger/attach';
-import { domain } from 'efx-forms/utils';
 import { App } from './App';
 
 import './index.css';
 
-attachLogger(domain, {
-  console: 'disabled',
-  inspector: 'disabled',
-  reduxDevtools: 'enabled',
-});
+const root = createRoot(document.getElementById('root') as HTMLElement);
 
-ReactDOM.render(
+root.render(
   <BrowserRouter>
     <App />
   </BrowserRouter>,
-  document.getElementById('root'),
 );

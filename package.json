@@ -3,27 +3,28 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
-    "@types/lodash": "^4.14.195",
-    "effector": "^22.8.6",
-    "effector-logger": "^0.13.4",
-    "effector-react": "^22.5.3",
-    "efx-forms": "^0.9.17",
+    "@types/lodash": "^4.14.202",
+    "effector": "^23.0.0",
+    "effector-logger": "^0.15.0",
+    "effector-react": "^23.0.1",
+    "efx-forms": "^1.0.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.1"
+    "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "eslint": "^8.45.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/jest": "^29.5.11",
+    "@types/react": "^18.2.42",
+    "@types/react-dom": "^18.2.17",
+    "eslint": "^8.55.0",
     "react-scripts": "^5.0.1",
-    "sass": "^1.63.6",
+    "sass": "^1.69.5",
     "typescript": "^4.9.5",
-    "webpack": "^5.88.1"
+    "webpack": "^5.89.0"
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",

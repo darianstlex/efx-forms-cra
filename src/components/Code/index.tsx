@@ -1,6 +1,6 @@
 import React from 'react';
 import { Store } from 'effector';
-import { useStore } from 'effector-react';
+import { useUnit } from 'effector-react';
 import { shapeFy, truthyFy } from 'efx-forms/utils';
 
 import styles from './index.module.scss';
@@ -11,7 +11,7 @@ interface CodeProps {
 }
 
 export const Code = ({ store, title }: CodeProps) => {
-  const data = useStore(store);
+  const data = useUnit(store);
   const shape = shapeFy(data);
   const truthy = truthyFy(data);
   const truthyShape = shapeFy(truthy);
