@@ -1,32 +1,28 @@
-import React from 'react';
-import { IFormValues, IFormValidators, TFieldValue, TFieldValidator } from 'efx-forms';
-import { Form, Field, FieldDataProvider, useForm, FieldsValueProvider } from 'efx-forms/react';
+import React, { useEffect, useState } from 'react';
+import { sample } from 'effector';
+import { useUnit } from 'effector-react';
+import { IFormValues, IFormValidators, getForm } from 'efx-forms';
+import { Form, Field, useFormInstance  } from 'efx-forms';
+import { FieldDataProvider  } from 'efx-forms/FieldDataProvider';
+import { FormDataProvider  } from 'efx-forms/FormDataProvider';
 import { required, email, min } from 'efx-forms/validators';
 
-import { FormStoreLogger } from 'components/FormStoreLogger';
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { Select } from 'components/Select';
-import {
-  UseFieldStore,
-  UseFieldStores,
-  UseFieldsValue,
-  UseFieldValue,
-  UseFormStore,
-  UseFormStores,
-  UseFormValues,
-} from 'components/Hooks';
+import { UseFieldValue, UseFormStore, UseFormValues } from 'components/Hooks';
+import { FormLogger } from 'components/FormStoreLogger';
 
-export const nameAndAge = ({ msg = 'Name and age are required' } = {}): TFieldValidator =>
-  (val: string, { 'user.name': userName }: IFormValues) => !val || !userName ? msg : false;
+export const nameAndAge = ({ msg = 'Name and age are required' } = {}) =>
+  (value: string, { 'user.name': userName }: Record<string, any> = {}) => !value || !userName ? msg : false;
 
 const formValidators: IFormValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
 };
 
-const parseISO = (date: string): TFieldValue => new Date(date).toISOString();
-const formatISO = (date: TFieldValue) => {
+const parseISO = (date: string): any => new Date(date).toISOString();
+const formatISO = (date: any) => {
   const d = new Date(date as string);
   return date ? `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + (d.getDate() + 1)).slice(-2)}` : '';
 };
@@ -39,8 +35,23 @@ const carOptions = [
   { value: 'audi', label: 'Audi' },
 ];
 
+const formInst = getForm({ name: 'stepOne' });
+
+sample({
+  clock: formInst.$values.map((it) => it['user.age'] || 0),
+  filter: (age) => !!age,
+  fn: (age) => ({ 'user.name': age > 30 ? 'Old' : 'Boy' }),
+  target: formInst.setValues,
+});
+
 export const StepOne = () => {
-  const form = useForm('stepOne');
+  const form = useFormInstance('stepOne');
+  const [reset] = useUnit([form.reset]);
+  const [age, setAge] = useState(35);
+
+  useEffect(() => {
+    setTimeout(() => setAge(20), 2000);
+  }, []);
 
   const submit = (values: IFormValues) => {
     console.log('SUBMIT: ', values);
@@ -53,52 +64,20 @@ export const StepOne = () => {
       onSubmit={submit}
       initialValues={{
         'user.name': 'StoreLogger',
-        'user.age': '34',
+        'user.age': age,
       }}
       validators={formValidators}
     >
-      <FormStoreLogger store="$errors" />
-      <FieldDataProvider name="user.name" stores={['$value', '$dirty']}>
-        {([value, dirty]) => (
-          <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>
-        )}
-      </FieldDataProvider>
-      <FieldsValueProvider fields={['user.email', 'user.age']}>
-        {([email, age]: any) => (
-          <div>Email-Age: {email} - {age}</div>
-        )}
-      </FieldsValueProvider>
-      <UseFormStores
-        title="Use Form Stores - actives/errors"
-        stores={['$actives', '$errors']}
-      />
-      <UseFormValues title="Use Form Values" />
-      <UseFormStore title="Use Form Store - valid" store="$valid"/>
-      <UseFieldValue title="Use Field Value - user.name" field="user.name" />
-      <UseFieldStore
-        title="Use Field Store - user.age - $value"
-        name="user.age"
-        store="$value"
-      />
-      <UseFieldStores
-        title="Use Field Stores - user.email - [$value, $errors]"
-        name="user.email"
-        stores={['$value', '$errors']}
-      />
-      <UseFieldsValue
-        title="Use Fields Values - [user.name, user.email]"
-        fields={['user.name', 'user.email']}
-      />
-      <div>
-        <Field
-          name="user.name"
-          Field={Input}
-          label="Name"
-          type="text"
-          initialValue="JustName"
-        />
-      </div>
+      <FormLogger />
       <Field
+        name="user.name"
+        Field={Input}
+        label="Name"
+        type="text"
+        initialValue="JustName"
+      />
+      <Field
+        validateOnChange
         name="user.email"
         Field={Input}
         label="Email"
@@ -110,6 +89,7 @@ export const StepOne = () => {
         Field={Input}
         label="Age"
         type="number"
+        parse={(val) => val ? Number(val): val}
         validators={[nameAndAge(), min({ value: 18 })]}
       />
       <Field
@@ -130,12 +110,27 @@ export const StepOne = () => {
         validators={[required()]}
       />
 
+      <FieldDataProvider name="user.name">
+        {({ value, dirty }) => (
+          <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>
+        )}
+      </FieldDataProvider>
+      <FormDataProvider>
+        {({ dirty }) => (
+          <div>Touched-Dirty: {JSON.stringify(dirty)}</div>
+        )}
+      </FormDataProvider>
+      <UseFieldValue title="Use Field Value - user.name" field="user.name" />
+      <UseFormStore title="Use Form Store - touches" store="$touches" />
+      <UseFormValues title="Use Form Values" />
+
       <Button type="submit">Submit</Button>
       {'  '}
-      <Button secondary onClick={() => form.reset()}>Reset</Button>
+      <Button secondary onClick={() => reset()}>Reset</Button>
 
       <Code store={form.$values} title="Values" />
-      <Code store={form.$errors} title="Errors" />
+      <Code store={form.$error} title="Errors" />
+      <Code store={form.$errors} title="Errors All" />
     </Form>
   );
 };

@@ -1,13 +1,8 @@
-import {
-  useFormStores,
-  useFormValues,
-  useFormStore,
-  useFieldValue,
-  useFieldStore,
-  useFieldStores,
-  useFieldsValue,
-} from 'efx-forms/react';
-import { TFieldStoreKey, TFormStoreKey } from 'efx-forms/model';
+import { useFormStores } from 'efx-forms/useFormStores';
+import { TFormStoreKey } from 'efx-forms';
+import { useFormStore } from 'efx-forms/useFormStore';
+import { useFormValues } from 'efx-forms/useFormValues';
+import { useFieldData } from 'efx-forms/useFieldData';
 
 const Display = ({ title, data }: { title: string, data: any }) => (
   <div style={{ margin: '10px 0', border: 'solid 1px grey' }}>
@@ -19,54 +14,30 @@ const Display = ({ title, data }: { title: string, data: any }) => (
 
 );
 
-export const UseFormStores = ({ title = 'Block', stores = [] }: {
+export const UseFormStores = ({ title = 'Block', formName, stores = [] }: {
   title?: string,
-  stores: TFormStoreKey[]
+  stores: TFormStoreKey[],
+  formName?: string;
 }) => {
-  const values = useFormStores(stores);
+  const values = useFormStores(stores, formName);
   return (<Display title={title} data={values} />);
 };
 
-export const UseFormStore = ({ title = 'Block', store }: {
+export const UseFormStore = ({ title = 'Block', store, formName }: {
   title?: string;
   store: TFormStoreKey;
+  formName?: string;
 }) => {
-  const value = useFormStore(store);
+  const value = useFormStore(store, formName);
   return (<Display title={title} data={value} />);
 };
 
-export const UseFormValues = ({ title = 'Block' }: { title?: string }) => {
-  const values = useFormValues();
+export const UseFormValues = ({ title = 'Block', formName }: { title?: string; formName?: string }) => {
+  const values = useFormValues(formName);
   return (<Display title={title} data={values} />);
 };
 
-export const UseFieldValue = ({ title = 'Block', field }: { title?: string, field: string }) => {
-  const value = useFieldValue(field);
+export const UseFieldValue = ({ title = 'Block', field, formName }: { title?: string, field: string; formName?: string }) => {
+  const {value} = useFieldData(field, formName);
   return (<Display title={title} data={value} />);
-};
-
-export const UseFieldStore = ({ title = 'Block', name, store }: {
-  title?: string;
-  name: string;
-  store: TFieldStoreKey;
-}) => {
-  const value = useFieldStore(name, store);
-  return (<Display title={title} data={value} />);
-};
-
-export const UseFieldStores = ({ title = 'Block', name, stores }: {
-  title?: string;
-  name: string;
-  stores: TFieldStoreKey[];
-}) => {
-  const values = useFieldStores(name, stores);
-  return (<Display title={title} data={values} />);
-};
-
-export const UseFieldsValue = ({ title = 'Block', fields }: {
-  title?: string;
-  fields: string[];
-}) => {
-  const values = useFieldsValue(fields);
-  return (<Display title={title} data={values} />);
 };

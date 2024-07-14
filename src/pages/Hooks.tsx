@@ -1,12 +1,8 @@
 import React from 'react';
-import { Form, FieldDataProvider, FieldsValueProvider } from 'efx-forms/react';
+import { FieldDataProvider } from 'efx-forms/FieldDataProvider';
 
-
-import { FormStoreLogger } from 'components/FormStoreLogger';
+import { FormLogger, FormStoreLogger } from 'components/FormStoreLogger';
 import {
-  UseFieldStore,
-  UseFieldStores,
-  UseFieldsValue,
   UseFieldValue,
   UseFormStore,
   UseFormStores,
@@ -16,39 +12,22 @@ import {
 
 export const Hooks = () => {
   return (
-    <Form keepOnUnmount name="stepOne">
-      <FormStoreLogger store="$errors" />
-      <FieldDataProvider name="user.name" stores={['$value', '$dirty']}>
-        {([value, dirty]) => (
+    <>
+      <FormLogger name="stepOne" />
+      <FormStoreLogger name="stepOne" store="$errors" />
+      <FieldDataProvider name="user.name" formName="stepOne">
+        {({ value, dirty }) => (
           <div>Name Watcher: {value} - {dirty ? 'Dirty' : 'Not Dirty'}</div>
         )}
       </FieldDataProvider>
-      <FieldsValueProvider fields={['user.email', 'user.age']}>
-        {([email, age]: any) => (
-          <div>Email-Age: {email} - {age}</div>
-        )}
-      </FieldsValueProvider>
       <UseFormStores
+        formName="stepOne"
         title="Use Form Stores - actives/errors"
-        stores={['$actives', '$errors']}
+        stores={['$activeValues', '$values']}
       />
-      <UseFormValues title="Use Form Values" />
-      <UseFormStore title="Use Form Store - valid" store="$valid"/>
-      <UseFieldValue title="Use Field Value - user.name" field="user.name" />
-      <UseFieldStore
-        title="Use Field Store - user.age - $value"
-        name="user.age"
-        store="$value"
-      />
-      <UseFieldStores
-        title="Use Field Stores - user.email - [$value, $errors]"
-        name="user.email"
-        stores={['$value', '$errors']}
-      />
-      <UseFieldsValue
-        title="Use Fields Values - [user.name, user.email]"
-        fields={['user.name', 'user.email']}
-      />
-    </Form>
+      <UseFormValues title="Use Form Values" formName="stepOne" />
+      <UseFormStore title="Use Form Store - valid" store="$valid" formName="stepOne"/>
+      <UseFieldValue title="Use Field Value - user.name" field="user.name" formName="stepOne" />
+    </>
   );
 };

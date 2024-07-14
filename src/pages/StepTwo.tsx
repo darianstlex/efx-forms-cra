@@ -1,6 +1,8 @@
 import React from 'react';
-import { IFormValues } from 'efx-forms';
-import { Form, Field, IfFormValues, useForm, IfFieldsValue, FormDataProvider } from 'efx-forms/react';
+import { IFormValues, useFormInstance } from 'efx-forms';
+import { Form, Field } from 'efx-forms';
+import { IfFormValues } from 'efx-forms/IfFormValues';
+import { FormDataProvider } from 'efx-forms/FormDataProvider';
 import { required, email, min } from 'efx-forms/validators';
 
 import { Input } from 'components/Input';
@@ -8,11 +10,13 @@ import { Checkbox } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { FormStoreLogger } from 'components/FormStoreLogger';
+import { useUnit } from 'effector-react';
 
 const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
 export const StepTwo = () => {
-  const form = useForm('stepTwo');
+  const form = useFormInstance('stepTwo');
+  const [reset] = useUnit([form.reset]);
 
   const submit = async (values: IFormValues) => {
     await wait(2000);
@@ -56,17 +60,6 @@ export const StepTwo = () => {
           type="text"
         />
       </IfFormValues>
-      <IfFieldsValue
-        fields={['customer.age', 'customer.canTransact']}
-        check={([age, canTransact]) => Number(age) > 21 && canTransact}
-      >
-        <div>Good Customer!</div>
-      </IfFieldsValue>
-      <IfFieldsValue
-        fields={['customer.age', 'customer.canTransact']}
-        check={([age, canTransact]) => Number(age) > 22 && canTransact}
-        render={([age]) => <div>I am {age}</div>}
-      />
       <Field
         name="customer.age"
         Field={Input}
@@ -82,8 +75,8 @@ export const StepTwo = () => {
         validators={[required()]}
       />
 
-      <FormDataProvider stores={['$submitting', '$valid']}>
-        {([submitting, valid]) => (
+      <FormDataProvider>
+        {({ submitting, valid }) => (
           <Button
             disabled={submitting || !valid}
             type="submit"
@@ -93,9 +86,9 @@ export const StepTwo = () => {
         )}
       </FormDataProvider>
       {'  '}
-      <Button secondary onClick={() => form.reset()}>Reset</Button>
+      <Button secondary onClick={() => reset()}>Reset</Button>
 
-      <Code store={form.$actives} title="Active Values" />
+      <Code store={form.$activeValues} title="Active Values" />
       <Code store={form.$values} title="Values" />
       <Code store={form.$errors} title="Errors" />
     </Form>
