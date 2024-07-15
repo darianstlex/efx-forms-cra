@@ -9,7 +9,7 @@ interface CheckboxProps {
   label: string;
   error: string;
   errors: string[];
-  value: TValue;
+  value: any;
   onChange: (checked: TValue) => void;
 }
 
@@ -21,7 +21,7 @@ export const Checkbox = ({ id, label, error, errors, value, onChange, name, ...r
         id={id || name}
         type="checkbox"
         className={styles.input}
-        checked={value}
+        checked={value || false}
         onChange={(e) => onChange(e.target.checked)}
         {...rest}
       />

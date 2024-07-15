@@ -42,7 +42,6 @@ export const StepTwo = () => {
         validators={[required(), email()]}
       />
       <Field
-        initialValue={false}
         name="customer.canTransact"
         Field={Checkbox}
         label="Can Transact"

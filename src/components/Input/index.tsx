@@ -8,10 +8,11 @@ interface InputProps {
   name: string;
   label: string;
   error: string;
-  onChange: (value: TValue) => void
+  onChange: (value: TValue) => void;
+  value: any;
 }
 
-export const Input = ({ id, label, error, onChange, name,  ...rest }: InputProps) => (
+export const Input = ({ id, label, error, onChange, name, value, ...rest }: InputProps) => (
   <div className={styles.wrapper}>
     <label htmlFor={id || name}>{label}</label>
     <input
@@ -19,6 +20,7 @@ export const Input = ({ id, label, error, onChange, name,  ...rest }: InputProps
       id={id || name}
       className={styles.input}
       onChange={(e) => onChange(e.target.value)}
+      value={value || ''}
       {...rest}
     />
     {error && <span className={styles.error}>{error}</span>}

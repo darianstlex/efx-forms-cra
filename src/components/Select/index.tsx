@@ -11,15 +11,17 @@ interface SelectProps {
   errors: string[];
   options: { value: string, label: string }[];
   onChange: (value: TValue) => void
+  value: any;
 }
 
-export const Select = ({ id, label, error, errors, onChange, name, options, ...rest }: SelectProps) => (
+export const Select = ({ id, label, error, errors, onChange, name, options, value, ...rest }: SelectProps) => (
   <div className={styles.wrapper}>
     <label htmlFor={id || name}>{label}</label>
     <select
       name={name}
       id={id || name}
       className={styles.input}
+      value={value || ''}
       onChange={(e) => onChange(e.target.value)}
       {...rest}
     >

@@ -7,7 +7,7 @@
     "effector": "^23.0.0",
     "effector-logger": "^0.15.0",
     "effector-react": "^23.0.1",
-    "efx-forms": "^2.0.0",
+    "efx-forms": "^2.0.6",
     "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
