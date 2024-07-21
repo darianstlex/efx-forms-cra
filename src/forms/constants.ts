@@ -9,6 +9,7 @@ export const FORM_CONFIG: IFormConfig = {
   skipClientValidation: false,
   validateOnBlur: true,
   validateOnChange: false,
+  disableFieldsReinit: false,
   validators: {},
 };
 

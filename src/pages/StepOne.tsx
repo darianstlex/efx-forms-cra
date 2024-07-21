@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { sample } from 'effector';
 import { useUnit } from 'effector-react';
-import { IFormValues, IFormValidators, getForm } from 'efx-forms';
+import { getForm } from 'efx-forms';
 import { Form, Field, useFormInstance  } from 'efx-forms';
 import { FieldDataProvider  } from 'efx-forms/FieldDataProvider';
 import { FormDataProvider  } from 'efx-forms/FormDataProvider';
@@ -17,7 +17,7 @@ import { FormLogger } from 'components/FormStoreLogger';
 export const nameAndAge = ({ msg = 'Name and age are required' } = {}) =>
   (value: string, { 'user.name': userName }: Record<string, any> = {}) => !value || !userName ? msg : false;
 
-const formValidators: IFormValidators = {
+const formValidators = {
   'user.name': [required({ msg: 'Form Validation - REQUIRED!' })],
 };
 
@@ -53,7 +53,7 @@ export const StepOne = () => {
     setTimeout(() => setAge(20), 2000);
   }, []);
 
-  const submit = (values: IFormValues) => {
+  const submit = (values: any) => {
     console.log('SUBMIT: ', values);
   };
 

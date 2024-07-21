@@ -1,5 +1,5 @@
 import React from 'react';
-import { IFormValues, useFormInstance } from 'efx-forms';
+import { useFormInstance } from 'efx-forms';
 import { Form, Field } from 'efx-forms';
 import { IfFormValues } from 'efx-forms/IfFormValues';
 import { FormDataProvider } from 'efx-forms/FormDataProvider';
@@ -18,7 +18,7 @@ export const StepTwo = () => {
   const form = useFormInstance('stepTwo');
   const [reset] = useUnit([form.reset]);
 
-  const submit = async (values: IFormValues) => {
+  const submit = async (values: any) => {
     await wait(2000);
     console.log('SUBMIT: ', values);
     return Promise.reject({ 'customer.name': 'Name is already in use' });

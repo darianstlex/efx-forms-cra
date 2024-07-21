@@ -5,6 +5,7 @@ import { Provider } from 'effector-react';
 import { StepOne } from 'pages/StepOne';
 import { StepTwo } from 'pages/StepTwo';
 import { Hooks } from 'pages/Hooks';
+import { Test } from 'pages/Test';
 
 import styles from './App.module.scss';
 import { fork } from 'effector';
@@ -23,6 +24,7 @@ export const App = () => {
             <NavLink className={isActiveNav} to="/">User</NavLink>
             <NavLink className={isActiveNav} to="/customer">Customer</NavLink>
             <NavLink className={isActiveNav} to="/hooks">Hooks</NavLink>
+            <NavLink className={isActiveNav} to="/test">Test</NavLink>
           </nav>
           <div className={styles.title}>{isHome ? 'User Form' : 'Customer Form'}</div>
           <div className={styles.form}>
@@ -30,6 +32,7 @@ export const App = () => {
               <Route element={<StepOne/>} path="/"/>
               <Route element={<StepTwo/>} path="/customer"/>
               <Route element={<Hooks/>} path="/hooks"/>
+              <Route element={<Test/>} path="/test"/>
             </Routes>
           </div>
         </header>

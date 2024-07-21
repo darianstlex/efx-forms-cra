@@ -13,53 +13,50 @@ export type TFormStoreKey = TFilteredKeyOf<IForm, Store<any>>;
 export type TFormStore = TFilteredType<IForm, Store<any>>;
 export type TFormStoreValue = TExtractStoreTypes<TFormStore>;
 
-export type IValidationParams = {
-  name?: string;
-} | undefined;
-
-export interface INameValue {
-  name: string;
-  value: any;
-}
-
-export interface INameBoolean {
-  name: string;
-  value: any;
-}
-
-export interface INameErrors {
-  name: string;
-  errors: string[] | null;
-}
-
-export interface IFieldConfig {
-  name: string;
-  initialValue?: any;
-  parse?: (value: any) => any;
-  format?: (value: any) => any;
-  validators?: ReturnType<TFieldValidator>[];
-  validateOnBlur?: boolean;
-  validateOnChange?: boolean;
-}
-
 export interface ISubmitArgs {
-  cb?: (values: IFormValues) => Promise<IFormErrors | void> | void;
+  cb?: (values: Record<string, any>) => Promise<Record<string, string | null> | void> | void;
   skipClientValidation?: boolean;
 }
 
 export interface IFormOnSubmitArgs extends ISubmitArgs {
-  values: IFormValues;
-  errors: IFormErrors;
+  values: Record<string, any>;
+  errors: Record<string, string | null>;
   valid: boolean;
 }
 
 export interface ISubmitResponseSuccess {
-  values?: IFormValues;
+  values?: Record<string, any>;
 }
 
 export interface ISubmitResponseError {
-  errors?: IFormErrors;
-  remoteErrors?: IFormErrors;
+  errors?: Record<string, string | null>;
+  remoteErrors?: Record<string, string | null>;
+}
+
+export type IValidationParams = {
+  name?: string;
+} | undefined;
+
+export interface IFieldConfig {
+  /** PROPERTY - name */
+  name: string;
+  /** PROPERTY - initial value */
+  initialValue?: any;
+  /** METHOD - parse value before store */
+  parse?: (value: any) => any;
+  /** METHOD - format value before display */
+  format?: (value: any) => any;
+  /** PROPERTY - field validators object */
+  validators?: ReturnType<TFieldValidator>[];
+  /** PROPERTY - validateOnBlur - will trigger validation on blur */
+  validateOnBlur?: boolean;
+  /** PROPERTY - validateOnChange - will trigger validation on change */
+  validateOnChange?: boolean;
+  /**
+   * PROPERTY - disableFieldReinit - if true will skip field update on initialValue changes
+   * if field is not touched
+   */
+  disableFieldReinit?: boolean;
 }
 
 export interface IFormConfig {
@@ -75,22 +72,15 @@ export interface IFormConfig {
   keepOnUnmount?: boolean;
   /** PROPERTY - skipClientValidation - if true will skip validation on submit */
   skipClientValidation?: boolean;
+  /**
+   * PROPERTY - disableFieldsReinit - if true will skip fields update on initialValue changes
+   * if field is not touched
+   */
+  disableFieldsReinit?: boolean;
   /** PROPERTY - onSubmit - submit callback */
   onSubmit?: ISubmitArgs['cb'];
-  /** PROPERTY - onSubmit - submit callback */
-  validators?: IFormValidators;
-}
-
-export interface IFormErrors {
-  [name: string]: string | null;
-}
-
-export interface IFormValues {
-  [name: string]: any;
-}
-
-export interface IFormValidators {
-  [name: string]: ReturnType<TFieldValidator>[];
+  /** PROPERTY - field validators object */
+  validators?: Record<string, ReturnType<TFieldValidator>[]>;
 }
 
 export interface IForm {
@@ -100,6 +90,8 @@ export interface IForm {
   name: string;
   /** $$STORE - Form active fields - all fields statuses - flat */
   $active: Store<Record<string, boolean>>;
+  /** $$STORE - Form active only fields - all fields statuses - flat */
+  $activeOnly: Store<Record<string, true>>;
   /** $$STORE - Form active values - all active / visible fields values - flat */
   $activeValues: Store<Record<string, any>>;
   /** $$STORE - Form values - all fields values - flat */
@@ -124,19 +116,23 @@ export interface IForm {
   reset: EventCallable<string | void>;
   /** EVENT - Form erase - reset form and delete all assigned form data */
   erase: EventCallable<void>;
-  /** EVENT - Set form config */
-  setActive: EventCallable<INameBoolean>;
   /**
    * EFFECT - Form submit - callback will be called with form values if form is valid
    * or if callback returns promise reject with errors, will highlight them in the form
    */
   submit: Effect<ISubmitArgs, ISubmitResponseSuccess, ISubmitResponseError>;
+  /** EVENT - Set form config */
+  setActive: EventCallable<{ name: string, value: any }>;
   /** EVENT - Form update fields values */
   setValues: EventCallable<Record<string, any>>;
+  /** EVENT - Form update touched fields values */
+  setTouchedValues: EventCallable<Record<string, any>>;
+  /** EVENT - Form update untouched fields values */
+  setUntouchedValues: EventCallable<Record<string, any>>;
   /** EVENT - Form onChange event */
-  onChange: EventCallable<INameValue>;
+  onChange: EventCallable<{ name: string, value: any }>;
   /** EVENT - Form onBlur event */
-  onBlur: EventCallable<INameValue>;
+  onBlur: EventCallable<{ name: string, value: any }>;
   /** EVENT - Form validate trigger */
   validate: EventCallable<IValidationParams>;
   /** PROP - Form config */
@@ -153,7 +149,7 @@ export interface IForms {
   [name: string]: IForm;
 }
 
-export interface IRFormProps extends Omit<IFormConfig, 'formValidations'> {
+export interface IRFormProps extends IFormConfig {
   children?: ReactNode;
   /** METHOD - submit - will trigger submit based on remoteValidation property */
   onSubmit?: IFormConfig['onSubmit'];
@@ -163,6 +159,22 @@ export interface IRFormProps extends Omit<IFormConfig, 'formValidations'> {
   validators?: IFormConfig['validators'];
   /** PROPERTY - keepOnUnmount - keep form data on form unmount */
   keepOnUnmount?: IFormConfig['keepOnUnmount'];
+  [any: string]: any;
+}
+
+export interface IFieldProps {
+  /** PROPERTY - field error */
+  error: string | null;
+  /** PROPERTY - field errors list */
+  errors: string[];
+  /** PROPERTY - field name */
+  name: string;
+  /** PROPERTY - field value */
+  value: any;
+  /** METHOD - send field value on change */
+  onChange: (value: any) => void;
+  /** METHOD - send field value on blur */
+  onBlur: (value: any) => void;
   [any: string]: any;
 }
 
@@ -181,6 +193,8 @@ export interface IRFieldProps {
   validateOnBlur?: IFieldConfig['validateOnBlur'];
   /** PROPERTY - validateOnChange - will trigger validation on change */
   validateOnChange?: IFieldConfig['validateOnChange'];
+  /** PROPERTY - disableFieldReinit - disable reinit on initialValue change */
+  disableFieldReinit?: IFieldConfig['disableFieldReinit'];
   /** PROPERTY - component - to be rendered */
   Field: ComponentType<any>;
   /** PROPERTY - to assign field to the specific form if outside of form context */
@@ -193,15 +207,15 @@ export interface IRIfFormValuesProps {
   /** PROPERTY - form name to check against */
   form?: string;
   /** METHOD - check - accepts form values and return boolean, if true render children */
-  check: (values: IFormValues, activeValues: IFormValues) => boolean;
+  check: (values: Record<string, any>, activeValues: Record<string, any>) => boolean;
   /** PROPERTY - setTo set fields on show */
-  setTo?: IFormValues;
+  setTo?: Record<string, any>;
   /** PROPERTY - setTo set fields on hide */
-  resetTo?: IFormValues;
+  resetTo?: Record<string, any>;
   /** PROPERTY - form update debounce - 0 */
   updateDebounce?: number;
   /** METHOD - render - accepts form values and return react element */
-  render?: (values: IFormValues) => ReactElement;
+  render?: (values: Record<string, any>) => ReactElement;
 }
 
 export interface IRIfFieldValueProps {

@@ -1,59 +1,24 @@
 import React, { useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { useStoreMap, useUnit } from 'effector-react';
+import pickBy from 'lodash/pickBy';
 
 import { ARR_0, FIELD_CONFIG } from './constants';
 import { useFormInstance } from './useFormInstance';
-import type { IRFieldProps } from './types';
+import { IRFieldProps } from './types';
 
-/**
- * Efx Field component
- */
-export const Field = ({
+export const InternalField = ({
   Field,
   name,
   formName,
-  initialValue,
-  validateOnChange,
-  validators,
-  validateOnBlur,
-  parse,
-  format,
   ...rest
-}: IRFieldProps) => {
+}: { name: string; formName?: string; Field: ComponentType<any>; }) => {
   const form = useFormInstance(formName);
+  const [onBlur, onChange] = useUnit([form.onBlur, form.onChange]);
 
   const value = useStoreMap(form.$values, (it) => it[name]);
   const error = useStoreMap(form.$error, (it) => it[name] || null);
-  const errors = useStoreMap(form.$errors, (it) => it[name] || ARR_0);
-  const touched = useStoreMap(form.$touches, (it) => it[name]);
-
-  const [setActive, onBlur, onChange, setValues] = useUnit([
-    form.setActive, form.onBlur, form.onChange, form.setValues,
-  ]);
-
-  useEffect(() => {
-    form.setFieldConfig({
-      name,
-      ...(parse ? { parse } : {}),
-      ...(format ? { format } : {}),
-      ...(validators ? { validators } : {}),
-      ...(initialValue ? { initialValue } : {}),
-      ...(validateOnBlur ? { validateOnBlur } : {}),
-      ...(validateOnChange ? { validateOnChange } : {}),
-    });
-  }, [form, format, initialValue, name, parse, validateOnBlur, validateOnChange, validators]);
-
-  useEffect(() => {
-    setActive({ name, value: true });
-    return () => {
-      setActive({ name, value: false });
-    };
-  }, [name, setActive]);
-
-  useEffect(() => {
-    const fieldInitialValue = initialValue || form.config.initialValues?.[name];
-    fieldInitialValue && !touched && setValues({ [name]: fieldInitialValue });
-  }, [form.config, form.config.initialValues, initialValue, name, setValues]);
+  const errors = useStoreMap(form.$errors, (it) => it[name] || ARR_0 as unknown as string[]);
 
   const formatValue = form.configs?.[name]?.format || FIELD_CONFIG.format!;
 
@@ -68,6 +33,60 @@ export const Field = ({
       ...rest,
     }} />
   );
+};
+
+/**
+ * Efx Field component
+ */
+export const Field = ({
+  Field,
+  name,
+  formName,
+  initialValue,
+  validateOnChange,
+  validators,
+  validateOnBlur,
+  disableFieldReinit,
+  parse,
+  format,
+  ...rest
+}: IRFieldProps) => {
+  const form = useFormInstance(formName);
+
+  const [setActive, setUntouchedValues] = useUnit([form.setActive, form.setUntouchedValues]);
+
+  useEffect(() => {
+    const config = pickBy({
+      parse, format, validators, initialValue, validateOnBlur, validateOnChange, disableFieldReinit,
+    }, (val) => val !== undefined);
+    form.setFieldConfig({ name, ...config });
+  }, [
+    form,
+    disableFieldReinit,
+    validateOnChange,
+    validateOnBlur,
+    initialValue,
+    validators,
+    format,
+    parse,
+    name,
+  ]);
+
+  useEffect(() => {
+    setActive({ name, value: true });
+    return () => {
+      setActive({ name, value: false });
+    };
+  }, [name, setActive]);
+
+  const fieldInitialValue = initialValue !== undefined ? initialValue : form.config.initialValues?.[name];
+  const reinitDisabled = disableFieldReinit !== undefined ? disableFieldReinit : form.config.disableFieldsReinit;
+
+  useEffect(() => {
+    !reinitDisabled && fieldInitialValue !== undefined && setUntouchedValues({ [name]: fieldInitialValue });
+  }, [reinitDisabled, name, fieldInitialValue, setUntouchedValues]);
+
+  return (<InternalField {...{ name, formName, Field, ...rest }} />);
 };
 
 Field.displayName = 'Field';
