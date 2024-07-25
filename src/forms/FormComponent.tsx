@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
 import type { FormEvent } from 'react';
+import { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useUnit } from 'effector-react';
-import isEmpty from 'lodash/isEmpty';
 import pickBy from 'lodash/pickBy';
+import isEmpty from 'lodash/isEmpty';
 
 import { FORM_CONFIG } from './constants';
 import { getForm } from './forms';
@@ -26,33 +27,43 @@ export const Form = ({
   ...props
 }: IRFormProps) => {
   const form: IForm = useMemo(() => {
-    const config = pickBy({
-      keepOnUnmount,
-      skipClientValidation,
-      initialValues,
-      validateOnBlur,
-      validateOnChange,
-      validators,
-      disableFieldsReinit,
-    }, (val) => val !== undefined);
+    const config = pickBy(
+      {
+        keepOnUnmount,
+        skipClientValidation,
+        initialValues,
+        validateOnBlur,
+        validateOnChange,
+        validators,
+        disableFieldsReinit,
+      },
+      (val) => val !== undefined,
+    );
     return getForm({ name, ...config });
-  }, [name]);
+  }, [name]); // eslint-disable-line
 
-  const [formSubmit, formReset, setUntouchedValues] = useUnit([form.submit, form.reset, form.setUntouchedValues]);
+  const [formSubmit, formReset, resetUntouched] = useUnit([
+    form.submit,
+    form.reset,
+    form.resetUntouched,
+  ]);
 
   /**
    * Set config on config props changes
    */
   useEffect(() => {
-    const config = pickBy({
-      validators,
-      initialValues,
-      keepOnUnmount,
-      validateOnBlur,
-      validateOnChange,
-      disableFieldsReinit,
-      skipClientValidation,
-    }, (val) => val !== undefined);
+    const config = pickBy(
+      {
+        validators,
+        initialValues,
+        keepOnUnmount,
+        validateOnBlur,
+        validateOnChange,
+        disableFieldsReinit,
+        skipClientValidation,
+      },
+      (val) => val !== undefined,
+    );
     form.setConfig({ name, ...config });
   }, [
     skipClientValidation,
@@ -75,12 +86,11 @@ export const Form = ({
     };
   }, [formReset, keepOnUnmount]);
 
-  /**
-   * Set initial values if fields are untouched
-   */
   useEffect(() => {
-    !disableFieldsReinit && !isEmpty(initialValues) && setUntouchedValues(initialValues);
-  }, [initialValues, setUntouchedValues, disableFieldsReinit]);
+    if (!disableFieldsReinit && !isEmpty(initialValues)) {
+      resetUntouched(Object.keys(initialValues));
+    }
+  }, [initialValues, disableFieldsReinit, resetUntouched]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -89,7 +99,9 @@ export const Form = ({
 
   return (
     <FormProvider name={name}>
-      <form onSubmit={submit} {...props}>{children}</form>
+      <form onSubmit={submit} {...props}>
+        {children}
+      </form>
     </FormProvider>
   );
 };

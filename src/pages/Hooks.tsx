@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldDataProvider } from 'efx-forms/FieldDataProvider';
+import { FieldDataProvider } from '../forms/FieldDataProvider';
 
 import { FormLogger, FormStoreLogger } from 'components/FormStoreLogger';
 import {

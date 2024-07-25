@@ -1,6 +1,6 @@
-import { useForm } from 'efx-forms/useForm';
-import { useFormStore } from 'efx-forms/useFormStore';
-import { TFormStoreKey } from 'efx-forms';
+import { useForm } from '../../forms/useForm';
+import { useFormStore } from '../../forms/useFormStore';
+import { TFormStoreKey } from '../../forms';
 
 interface StoreLoggerProps {
   store: TFormStoreKey;

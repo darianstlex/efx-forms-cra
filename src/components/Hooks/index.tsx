@@ -1,8 +1,8 @@
-import { useFormStores } from 'efx-forms/useFormStores';
-import { TFormStoreKey } from 'efx-forms';
-import { useFormStore } from 'efx-forms/useFormStore';
-import { useFormValues } from 'efx-forms/useFormValues';
-import { useFieldData } from 'efx-forms/useFieldData';
+import { useFormStores } from '../../forms/useFormStores';
+import { TFormStoreKey } from '../../forms';
+import { useFormStore } from '../../forms/useFormStore';
+import { useFormValues } from '../../forms/useFormValues';
+import { useFieldData } from '../../forms/useFieldData';
 
 const Display = ({ title, data }: { title: string, data: any }) => (
   <div style={{ margin: '10px 0', border: 'solid 1px grey' }}>

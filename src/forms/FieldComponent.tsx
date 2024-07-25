@@ -1,39 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, memo } from 'react';
 import type { ComponentType } from 'react';
-import { useStoreMap, useUnit } from 'effector-react';
+import { useUnit } from 'effector-react';
 import pickBy from 'lodash/pickBy';
 
-import { ARR_0, FIELD_CONFIG } from './constants';
+import { FIELD_CONFIG } from './constants';
 import { useFormInstance } from './useFormInstance';
-import { IRFieldProps } from './types';
+import type { IRFieldProps } from './types';
+import { useFieldStore } from './useFieldStore';
 
-export const InternalField = ({
+const InternalFieldInst = ({
   Field,
   name,
   formName,
   ...rest
-}: { name: string; formName?: string; Field: ComponentType<any>; }) => {
+}: {
+  name: string;
+  formName?: string;
+  Field: ComponentType<any>;
+}) => {
   const form = useFormInstance(formName);
-  const [onBlur, onChange] = useUnit([form.onBlur, form.onChange]);
+  const [onFieldBlur, onFieldChange] = useUnit([form.onBlur, form.onChange]);
 
-  const value = useStoreMap(form.$values, (it) => it[name]);
-  const error = useStoreMap(form.$error, (it) => it[name] || null);
-  const errors = useStoreMap(form.$errors, (it) => it[name] || ARR_0 as unknown as string[]);
+  const fieldValue = useFieldStore({ store: '$values', formName, name });
+  const error = useFieldStore({ store: '$error', formName, name, defaultValue: null });
+  const errors = useFieldStore({ store: '$errors', formName, name, defaultValue: null });
 
-  const formatValue = form.configs?.[name]?.format || FIELD_CONFIG.format!;
+  const onChange = useCallback((value: any) => {
+    onFieldChange({ name, value });
+  }, [name, onFieldChange]);
 
-  return (
-    <Field {...{
-      error,
-      errors,
-      name,
-      value: formatValue(value),
-      onChange: (value: any) => onChange({ name, value }),
-      onBlur: (value: any) => onBlur({ name, value }),
-      ...rest,
-    }} />
-  );
+  const onBlur = useCallback((value: any) => {
+    onFieldBlur({ name, value });
+  }, [name, onFieldBlur]);
+
+  const value = useMemo(() => {
+    const format = form.configs?.[name]?.format || FIELD_CONFIG.format!;
+    return format(fieldValue);
+  }, [fieldValue, form.configs, name]);
+
+  return (<Field {...{ error, errors, name, value, onChange, onBlur, ...rest }} />);
 };
+
+export const InternalField = memo(InternalFieldInst);
 
 /**
  * Efx Field component
@@ -53,12 +61,21 @@ export const Field = ({
 }: IRFieldProps) => {
   const form = useFormInstance(formName);
 
-  const [setActive, setUntouchedValues] = useUnit([form.setActive, form.setUntouchedValues]);
+  const [setActive, resetUntouched] = useUnit([form.setActive, form.resetUntouched]);
 
   useEffect(() => {
-    const config = pickBy({
-      parse, format, validators, initialValue, validateOnBlur, validateOnChange, disableFieldReinit,
-    }, (val) => val !== undefined);
+    const config = pickBy(
+      {
+        parse,
+        format,
+        validators,
+        initialValue,
+        validateOnBlur,
+        validateOnChange,
+        disableFieldReinit,
+      },
+      (val) => val !== undefined,
+    );
     form.setFieldConfig({ name, ...config });
   }, [
     form,
@@ -79,14 +96,18 @@ export const Field = ({
     };
   }, [name, setActive]);
 
-  const fieldInitialValue = initialValue !== undefined ? initialValue : form.config.initialValues?.[name];
-  const reinitDisabled = disableFieldReinit !== undefined ? disableFieldReinit : form.config.disableFieldsReinit;
+  const reinitDisabled =
+    disableFieldReinit !== undefined
+      ? disableFieldReinit
+      : form.config.disableFieldsReinit;
 
   useEffect(() => {
-    !reinitDisabled && fieldInitialValue !== undefined && setUntouchedValues({ [name]: fieldInitialValue });
-  }, [reinitDisabled, name, fieldInitialValue, setUntouchedValues]);
+    !reinitDisabled
+    && initialValue !== undefined
+    && resetUntouched([name]);
+  }, [reinitDisabled, name, initialValue, resetUntouched]);
 
-  return (<InternalField {...{ name, formName, Field, ...rest }} />);
+  return <InternalField {...{ name, formName, Field, ...rest }} />;
 };
 
 Field.displayName = 'Field';

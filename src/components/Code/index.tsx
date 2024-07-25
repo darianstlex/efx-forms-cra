@@ -1,7 +1,7 @@
 import React from 'react';
 import { Store } from 'effector';
 import { useUnit } from 'effector-react';
-import { shapeFy, truthyFy } from 'efx-forms/utils';
+import { shapeFy, truthyFy } from '../../forms/utils';
 
 import styles from './index.module.scss';
 

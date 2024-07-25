@@ -5,7 +5,17 @@ import { useProvidedScope } from 'effector-react';
 import { useFormInstance } from './useFormInstance';
 import type { TFormStoreKey } from './types';
 
-type TFieldStore = Extract<TFormStoreKey, '$active' | '$activeOnly' | '$activeValues' | '$values' | '$errors' | '$error' | '$touches' | '$dirties'>
+type TFieldStore = Extract<
+  TFormStoreKey,
+  | '$active'
+  | '$activeOnly'
+  | '$activeValues'
+  | '$values'
+  | '$errors'
+  | '$error'
+  | '$touches'
+  | '$dirties'
+>;
 
 interface UseFieldStoreProps {
   store: TFieldStore;
@@ -14,7 +24,7 @@ interface UseFieldStoreProps {
   defaultValue?: any;
 }
 
-export const useFieldStore = <T = any>({
+export const useFieldStore = ({
   store,
   name,
   formName,
@@ -22,7 +32,7 @@ export const useFieldStore = <T = any>({
 }: UseFieldStoreProps) => {
   const scope = useProvidedScope();
   const form = useFormInstance(formName);
-  const [value, setValue] = useState<T>();
+  const [value, setValue] = useState();
 
   useEffect(() => {
     const unwatch = createWatch({
@@ -36,7 +46,7 @@ export const useFieldStore = <T = any>({
     return () => {
       unwatch();
     };
-  }, [store, value, name, form, scope]);
+  }, [store, name, form, scope]);
 
   return value ?? defaultValue;
 };

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { sample } from 'effector';
 import { useUnit } from 'effector-react';
-import { getForm } from 'efx-forms';
-import { Form, Field, useFormInstance  } from 'efx-forms';
-import { FieldDataProvider  } from 'efx-forms/FieldDataProvider';
-import { FormDataProvider  } from 'efx-forms/FormDataProvider';
-import { required, email, min } from 'efx-forms/validators';
+import { getForm } from '../forms';
+import { Form, Field, useFormInstance  } from '../forms';
+import { FieldDataProvider  } from '../forms/FieldDataProvider';
+import { FormDataProvider  } from '../forms/FormDataProvider';
+import { required, email, min } from '../forms/validators';
 
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';

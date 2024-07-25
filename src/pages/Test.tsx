@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Field, getForm } from 'efx-forms';
-import { required, email } from 'efx-forms/validators';
+import { Form, Field, getForm } from '../forms';
+import { required, email } from '../forms/validators';
 
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
