@@ -3,6 +3,8 @@ import { TFormStoreKey } from '../../forms';
 import { useFormStore } from '../../forms/useFormStore';
 import { useFormValues } from '../../forms/useFormValues';
 import { useFieldData } from '../../forms/useFieldData';
+import { ReactElement } from 'react';
+import { useFieldStore } from '../../forms/useFieldStore';
 
 const Display = ({ title, data }: { title: string, data: any }) => (
   <div style={{ margin: '10px 0', border: 'solid 1px grey' }}>
@@ -11,7 +13,6 @@ const Display = ({ title, data }: { title: string, data: any }) => (
       {JSON.stringify(data, undefined, 2)}
     </pre>
   </div>
-
 );
 
 export const UseFormStores = ({ title = 'Block', formName, stores = [] }: {
@@ -40,4 +41,9 @@ export const UseFormValues = ({ title = 'Block', formName }: { title?: string; f
 export const UseFieldValue = ({ title = 'Block', field, formName }: { title?: string, field: string; formName?: string }) => {
   const {value} = useFieldData(field, formName);
   return (<Display title={title} data={value} />);
+};
+
+export const FieldStoreProvider = ({ name, children, formName, store }: { children: (values: any) => ReactElement; name: string; formName?: string; store: string; }) => {
+  const value = useFieldStore({ store: store as any, name, formName, defaultValue: false });
+  return children(value);
 };

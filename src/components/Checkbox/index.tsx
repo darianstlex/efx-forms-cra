@@ -1,22 +1,30 @@
 import React from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 import styles from './index.module.scss';
+import type { IFieldProps, IRFieldProps } from '../../forms';
+import { Field } from '../../forms';
 
-type TValue = boolean;
-interface CheckboxProps {
-  id: string;
-  name: string;
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  id?: string;
   label: string;
-  error: string;
-  errors: string[];
-  value: any;
-  onChange: (checked: TValue) => void;
+  name: string;
 }
 
-export const Checkbox = ({ id, label, error, errors, value, onChange, name, ...rest }: CheckboxProps) => (
+export const Checkbox = ({
+  id,
+  label,
+  error,
+  value,
+  onChange,
+  name,
+  ...rest
+}: InputProps & IFieldProps) => (
   <div className={styles.wrapper}>
     <div className={styles.field}>
-      <label htmlFor={id || name} className={styles.label}>{label}</label>
+      <label htmlFor={id || name} className={styles.label}>
+        {label}
+      </label>
       <input
         id={id || name}
         type="checkbox"
@@ -28,4 +36,11 @@ export const Checkbox = ({ id, label, error, errors, value, onChange, name, ...r
     </div>
     {error && <span className={styles.error}>{error}</span>}
   </div>
+);
+
+export const CheckboxField = ({
+  name,
+  ...rest
+}: Omit<IRFieldProps, 'Field'> & InputProps) => (
+  <Field name={name} Field={Checkbox} {...rest} />
 );

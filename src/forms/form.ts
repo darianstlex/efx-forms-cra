@@ -43,11 +43,10 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
   const setError = dm.event<{ name: string; errors: string[] | null }>('set-error');
   const setErrors = dm.event<Record<string, string[] | null>>('set-errors');
   const setValues = dm.event<Record<string, any>>('set-values');
-  const setTouchedValues = dm.event<Record<string, any>>('set-touched');
-  const setUntouchedValues = dm.event<Record<string, any>>('set-untouched');
   const onChange = dm.event<{ name: string; value: any }>('on-change');
   const onBlur = dm.event<{ name: string; value: any }>('on-blur');
-  const reset = dm.event<string | void>('reset');
+  const reset = dm.event<void>('reset');
+  const resetField = dm.event<string>('reset-field');
   const resetUntouched = dm.event<string[]>('reset-untouched');
   const erase = dm.event<void>('erase');
   const validate = dm.event<IValidationParams>('validate');
@@ -73,6 +72,15 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
       const parsedValue = parse(value);
       return state[name] !== parsedValue ? Object.assign({}, state, { [name]: parsedValue }) : state;
     })
+    .on(reset, (state) => reduce(
+      state,
+      (acc, _, name) => Object.assign(acc, { [name]: getFieldInitVal(name) }),
+      {} as Record<string, any>,
+    ))
+    .on(resetField, (state, field) => {
+      const value = getFieldInitVal(field);
+      return value !== state[field] ? Object.assign({}, state, { [field]: value }) : state;
+    })
     .reset(erase);
 
   /**
@@ -88,10 +96,7 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
   const $activeValues = combine($activeOnly, $values, (active, values) =>
     reduce(
       active,
-      (acc, _, field) => {
-        acc[field] = values[field];
-        return acc;
-      },
+      (acc, _, field) => Object.assign(acc, { [field]: values[field] }),
       {} as Record<string, any>,
     ),
   );
@@ -102,33 +107,40 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
   const $errors = dm
     .store<Record<string, string[] | null>>({}, { name: '$errors' })
     .on(setError, (state, { name, errors }) =>
-      pickBy(Object.assign({}, state, { [name]: errors }), (error) => !!error),
+      Object.assign({}, state, { [name]: errors }),
     )
     .on(setErrors, (state, errors) =>
-      pickBy(Object.assign({}, state, errors), (error) => !!error),
+      Object.assign({}, state, errors),
     )
+    .on([
+      setActive,
+      resetField.map((name) => ({ name })),
+    ], (state, { name }) => {
+      return state[name] ? Object.assign({}, state, { [name]: null }) : state;
+    })
     .reset(erase, reset);
 
   /**
    * Errors store - keeps all fields validation errors
    */
-  const $error = $errors.map((errors) => {
-    return reduce(
+  const $error = $errors.map((errors) =>
+    reduce(
       errors,
-      (acc, _, field) => {
-        acc[field] = errors?.[field]?.[0] || null;
-        return acc;
-      },
+      (acc, _, field) => Object.assign(acc, { [field]: errors?.[field]?.[0] || null }),
       {} as Record<string, string | null>,
-    );
-  });
+    ),
+  );
 
   /**
    * Calculates form valid state
    */
-  const $valid = $error.map((state) =>
-    !isEmpty(state) ? !hasTruthy(state) : true,
-  );
+  const $valid = combine($activeOnly, $error, ((active, errors) => {
+    const activeErrors = reduce(errors, (acc, error, name) => {
+      error && active[name] && (acc[name] = error);
+      return acc;
+    }, {} as Record<string, string | null>);
+    return !isEmpty(activeErrors) ? !hasTruthy(activeErrors) : true;
+  }));
 
   /**
    * Form submit effect.
@@ -186,25 +198,32 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
     .on(onChange, (state, { name }) =>
       state[name] ? state : Object.assign({}, state, { [name]: true }),
     )
+    .on([
+      setActive,
+      resetField.map((name) => ({ name })),
+      ], (state, { name }) =>
+      !state[name] ? state : Object.assign({}, state, { [name]: false }),
+    )
     .reset(erase, reset, submit.done);
 
   /**
    * Calculates form touched state
    */
-  const $touched = $touches.map((state) =>
-    !isEmpty(state) ? hasTruthy(state) : false,
-  );
+  const $touched = combine($activeOnly, $touches, ((active, touches) => {
+    const activeTouches = reduce(touches, (acc, touch, name) => {
+      touch && active[name] && (acc[name] = touch);
+      return acc;
+    }, {} as Record<string, boolean>);
+    return !isEmpty(activeTouches) ? hasTruthy(activeTouches) : false;
+  }));
 
   /**
-   * Dirties store - keeps all active fields dirty state
+   * Dirties store - keeps all fields dirty state
    */
-  const $dirties = $activeValues.map((values) => {
+  const $dirties = $values.map((values) => {
     const dirties = reduce(
       values,
-      (acc, _, field: string) => {
-        acc[field] = values[field] !== getFieldInitVal(field);
-        return acc;
-      },
+      (acc, _, field: string) => Object.assign(acc, { [field]: values[field] !== getFieldInitVal(field) }),
       {} as Record<string, boolean>,
     );
     return pickBy(dirties, (dirty) => dirty);
@@ -213,29 +232,13 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
   /**
    * Calculates form dirty state
    */
-  const $dirty = $dirties.map((state) =>
-    !isEmpty(state) ? hasTruthy(state) : false,
-  );
-
-  /**
-   * Reset form value/values to the initial state
-   */
-  sample({
-    clock: reset,
-    source: { values: $values },
-    fn: ({ values }, field) =>
-      field
-        ? Object.assign({}, values, { [field]: getFieldInitVal(field) })
-        : reduce(
-            values,
-            (acc, _, name) => {
-              acc[name] = getFieldInitVal(name);
-              return acc;
-            },
-            {} as Record<string, any>,
-          ),
-    target: $values,
-  });
+  const $dirty = combine($activeOnly, $dirties, ((active, dirties) => {
+    const activeDirties = reduce(dirties, (acc, dirty, name) => {
+      dirty && active[name] && (acc[name] = dirty);
+      return acc;
+    }, {} as Record<string, boolean>);
+    return !isEmpty(activeDirties) ? hasTruthy(activeDirties) : false;
+  }));
 
   /**
    * Reset form untouched fields
@@ -253,16 +256,6 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
       return !isEmpty(target) ? Object.assign({}, values, target) : values;
     },
     target: $values,
-  });
-
-  /**
-   * Reset field error on deactivation
-   */
-  sample({
-    clock: setActive,
-    filter: ({ value }) => !value,
-    fn: ({ name }) => ({ name, errors: null }),
-    target: setError,
   });
 
   /**
@@ -288,8 +281,7 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
           const errors = validators
             ?.map?.((vd) => vd(values[field], values))
             ?.filter(Boolean) as string[];
-          acc[field] = errors?.length ? errors : null;
-          return acc;
+          return Object.assign(acc, { [field]: errors?.length ? errors : null });
         },
         {} as Record<string, string[] | null>,
       );
@@ -308,7 +300,7 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
       const validators: ReturnType<TFieldValidator>[] =
         getFieldConfigProp(source?.name as string, 'validators') || [];
       const errors = validators
-        .map?.((vd) => vd(values[source?.name as string], values))
+        ?.map?.((vd) => vd(values[source?.name as string], values))
         ?.filter?.(Boolean) as string[];
       return {
         name: source?.name as string,
@@ -341,26 +333,6 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
   });
 
   /**
-   * Set non touched values
-   */
-  sample({
-    clock: setUntouchedValues,
-    source: { touches: $touches },
-    fn: ({ touches }, values) => pickBy(values, (_, key) => !touches[key]),
-    target: setValues,
-  });
-
-  /**
-   * Set touched values
-   */
-  sample({
-    clock: setTouchedValues,
-    source: { touches: $touches },
-    fn: ({ touches }, values) => pickBy(values, (_, key) => !!touches[key]),
-    target: setValues,
-  });
-
-  /**
    * Reset errors on change if validateOnChange is disabled
    */
   sample({
@@ -368,23 +340,6 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
     fn: ({ name }) => ({ name, errors: null }),
     filter: ({ name }) => !getFieldConfigProp(name, 'validateOnChange'),
     target: setError,
-  });
-
-  /**
-   * Reset errors on setValues
-   */
-  sample({
-    clock: setValues,
-    fn: (values) =>
-      reduce(
-        values,
-        (acc, _, field) => {
-          acc[field] = null;
-          return acc;
-        },
-        {} as Record<string, string[] | null>,
-      ),
-    target: setErrors,
   });
 
   /**
@@ -396,24 +351,14 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
     fn: ({ remoteErrors }) => {
       return reduce(
         remoteErrors,
-        (acc, _, key) => {
-          acc[key] = remoteErrors?.[key] ? [remoteErrors?.[key] as string] : null;
-          return acc;
-        },
+        (acc, _, key) => Object.assign(
+          acc,
+          { [key]: remoteErrors?.[key] ? [remoteErrors?.[key] as string] : null },
+        ),
         {} as Record<string, string[] | null>,
       );
     },
     target: setErrors,
-  });
-
-  /**
-   * Set initial field value on field activation
-   */
-  sample({
-    clock: setActive,
-    filter: ({ value }) => value,
-    fn: ({ name }) => name,
-    target: reset,
   });
 
   /**
@@ -446,11 +391,10 @@ export const createFormHandler = (formConfig: IFormConfig): IForm => {
     onBlur,
     onChange,
     reset,
+    resetField,
     resetUntouched,
     setActive,
     setValues,
-    setTouchedValues,
-    setUntouchedValues,
     submit,
     validate,
     get config() {

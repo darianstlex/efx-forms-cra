@@ -6,11 +6,12 @@ import { IfFormValues } from '../forms/IfFormValues';
 import { FormDataProvider } from '../forms/FormDataProvider';
 import { required, email, min } from '../forms/validators';
 
-import { Input } from 'components/Input';
-import { Checkbox } from 'components/Checkbox';
+import { Input, TextField, NumberField } from 'components/Input';
+import { CheckboxField } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { FormStoreLogger } from 'components/FormStoreLogger';
+import { FieldStoreProvider } from '../components/Hooks';
 
 const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
@@ -26,47 +27,38 @@ export const StepTwo = () => {
 
   return (
     <>
-      <Field
+      <TextField
         name="customer.name"
         formName="stepTwo"
-        Field={Input}
         label="Name"
-        type="text"
         validators={[required()]}
         initialValue="Hoho"
       />
       <Form name="stepTwo" onSubmit={submit} initialValues={{ 'customer.name': 'Haha' }}>
         <FormStoreLogger store="$submitting" />
-        <Field
+        <TextField
           name="customer.email"
-          Field={Input}
           label="Email"
-          type="text"
           validators={[required(), email()]}
         />
-        <Field
+        <CheckboxField
           name="customer.canTransact"
-          Field={Checkbox}
           label="Can Transact"
         />
         <IfFormValues
           check={(values: any) => values['customer.canTransact']}
-          setTo={{ 'customer.name': 'Expert', 'customer.salary': '300' }}
-          resetTo={{ 'customer.salary': '100' }}
+          setTo={{ 'customer.name': 'Expert', 'customer.salary': 300 }}
+          resetTo={{ 'customer.salary': 100 }}
           updateDebounce={0}
         >
-          <Field
+          <NumberField
             name="customer.salary"
-            Field={Input}
             label="Salary"
-            type="text"
           />
         </IfFormValues>
-        <Field
+        <NumberField
           name="customer.age"
-          Field={Input}
           label="Age"
-          type="number"
           validators={[min({ value: 21 })]}
         />
         <Field
@@ -77,6 +69,16 @@ export const StepTwo = () => {
           validators={[required()]}
         />
 
+        <FieldStoreProvider name="customer.age" store="$touches">
+          {(touched) => (
+            <Button>
+              {`${touched}`}
+              {'  '}
+              {Date.now()}
+            </Button>
+          )}
+        </FieldStoreProvider>
+        {'  '}
         <FormDataProvider>
           {({ submitting, valid }) => (
             <Button
@@ -92,7 +94,7 @@ export const StepTwo = () => {
 
         <Code store={form.$activeValues} title="Active Values" />
         <Code store={form.$values} title="Values" />
-        <Code store={form.$errors} title="Errors" />
+        <Code store={form.$touches} title="Touches" />
       </Form>
     </>
   );
