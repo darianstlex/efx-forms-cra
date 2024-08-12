@@ -1,17 +1,17 @@
 import React from 'react';
 import { useUnit } from 'effector-react';
-import { useFormInstance } from '../forms';
-import { Form, Field } from '../forms';
-import { IfFormValues } from '../forms/IfFormValues';
-import { FormDataProvider } from '../forms/FormDataProvider';
-import { required, email, min } from '../forms/validators';
 
 import { Input, TextField, NumberField } from 'components/Input';
 import { CheckboxField } from 'components/Checkbox';
 import { Button } from 'components/Button';
 import { Code } from 'components/Code';
 import { FormStoreLogger } from 'components/FormStoreLogger';
-import { FieldStoreProvider } from '../components/Hooks';
+import { FieldStoreProvider } from 'components/Hooks';
+
+import { Form, Field, useFormInstance } from 'forms';
+import { IfFormValues } from 'forms/IfFormValues';
+import { FormDataProvider } from 'forms/FormDataProvider';
+import { required, email, min } from 'forms/validators';
 
 const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 

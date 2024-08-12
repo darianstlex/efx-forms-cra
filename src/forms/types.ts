@@ -58,6 +58,8 @@ export interface IFieldConfig {
   parse?: (value: any) => any;
   /** METHOD - format value before display */
   format?: (value: any) => any;
+  /** PROPERTY - skip field register / config update */
+  passive?: boolean;
   /** PROPERTY - field validators object */
   validators?: ReturnType<TFieldValidator>[];
   /** PROPERTY - validateOnBlur - will trigger validation on blur */
@@ -94,6 +96,8 @@ export interface IFormConfig {
   /** PROPERTY - field validators object */
   validators?: Record<string, ReturnType<TFieldValidator>[]>;
 }
+
+export type TCommonConfigKeys = 'validateOnBlur' | 'validateOnChange'
 
 export interface IForm {
   /** PROPERTY - Form name */
@@ -157,6 +161,11 @@ export interface IForm {
   setFieldConfig: (cfg: IFieldConfig) => void;
 }
 
+export interface IFormData {
+  config: IFormConfig;
+  configs: Record<string, IFieldConfig>;
+}
+
 export interface IForms {
   [name: string]: IForm;
 }
@@ -199,6 +208,8 @@ export interface IRFieldProps {
   parse?: IFieldConfig['parse'];
   /** METHOD - format value before display */
   format?: IFieldConfig['format'];
+  /** PROPERTY - skip field register / config update */
+  passive?: IFieldConfig['passive'];
   /** PROPERTY - validators - array of functions / validators */
   validators?: IFieldConfig['validators'];
   /** PROPERTY - validateOnBlur - will trigger validation on blur */

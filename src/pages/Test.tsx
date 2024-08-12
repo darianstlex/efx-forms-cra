@@ -1,9 +1,11 @@
 import React from 'react';
-import { Form, Field, getForm } from '../forms';
-import { required, email } from '../forms/validators';
 
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
+import { FormStoreLogger } from 'components/FormStoreLogger';
+
+import { Form, Field, getForm } from 'forms';
+import { required, email } from 'forms/validators';
 
 const wait = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
@@ -21,6 +23,7 @@ export const Test = () => {
 
   return (
     <Form name="stepTest" onSubmit={submit}>
+      <FormStoreLogger store="$active" />
       {ARR.map((value, idx) => (<Field
         key={`email-${idx}`}
         name={`customer.name-${idx}`}

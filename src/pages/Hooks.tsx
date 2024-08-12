@@ -1,5 +1,4 @@
 import React from 'react';
-import { FieldDataProvider } from '../forms/FieldDataProvider';
 
 import { FormLogger, FormStoreLogger } from 'components/FormStoreLogger';
 import {
@@ -8,6 +7,8 @@ import {
   UseFormStores,
   UseFormValues,
 } from 'components/Hooks';
+
+import { FieldDataProvider } from 'forms/FieldDataProvider';
 
 
 export const Hooks = () => {

@@ -1,6 +1,5 @@
-import { useForm } from '../../forms/useForm';
-import { useFormStore } from '../../forms/useFormStore';
-import { TFormStoreKey } from '../../forms';
+import { useFormStore } from 'forms/useFormStore';
+import { TFormStoreKey, useFormInstance } from 'forms';
 
 interface StoreLoggerProps {
   store: TFormStoreKey;
@@ -14,7 +13,7 @@ export const FormStoreLogger = ({ store, name }: StoreLoggerProps) => {
 };
 
 export const FormLogger = ({ name }: { name?: string }) => {
-  const form = useForm(name);
-  console.log(`FORM - ${name}: `, form);
+  const form = useFormInstance(name);
+  console.log(`FORM - ${form.config.name}: `, form);
   return null;
 };

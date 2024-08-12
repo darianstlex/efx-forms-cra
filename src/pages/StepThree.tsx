@@ -1,10 +1,11 @@
 import React from 'react';
-import {Form, Field, useFormInstance} from '../forms';
 
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
-import { useFormMethods } from '../forms/useFormMethods';
-import { Code } from '../components/Code';
+import { Code } from 'components/Code';
+
+import { Form, Field, useFormInstance } from 'forms';
+import { useFormMethods } from 'forms/useFormMethods';
 
 
 export const StepThree = () => {
@@ -40,7 +41,7 @@ export const StepThree = () => {
       {[0, 1, 2].map((idx) => (
         <div key={`${idx}-addr`} style={{ padding: '20px 0' }}>
           <Field
-            name={`user.address[${idx}]`}
+            name={`userAddress[${idx}]`}
             Field={Input}
             label={`Address ${idx + 1}`}
             type="text"

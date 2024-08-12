@@ -7,6 +7,7 @@ import { StepTwo } from 'pages/StepTwo';
 import { StepThree } from 'pages/StepThree';
 import { Hooks } from 'pages/Hooks';
 import { Test } from 'pages/Test';
+import { Outside } from 'pages/Outside';
 
 import styles from './App.module.scss';
 import { fork } from 'effector';
@@ -27,6 +28,7 @@ export const App = () => {
             <NavLink className={isActiveNav} to="/hooks">Hooks</NavLink>
             <NavLink className={isActiveNav} to="/test">Test</NavLink>
             <NavLink className={isActiveNav} to="/three">Three</NavLink>
+            <NavLink className={isActiveNav} to="/outside">Outside</NavLink>
           </nav>
           <div className={styles.title}>{isHome ? 'User Form' : 'Customer Form'}</div>
           <div className={styles.form}>
@@ -36,6 +38,7 @@ export const App = () => {
               <Route element={<Hooks/>} path="/hooks"/>
               <Route element={<Test/>} path="/test"/>
               <Route element={<StepThree/>} path="/three"/>
+              <Route element={<Outside/>} path="/outside"/>
             </Routes>
           </div>
         </header>

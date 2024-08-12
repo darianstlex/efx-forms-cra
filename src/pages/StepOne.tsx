@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { sample } from 'effector';
-import { useUnit } from 'effector-react';
-import { getForm } from '../forms';
-import { Form, Field, useFormInstance  } from '../forms';
-import { FieldDataProvider  } from '../forms/FieldDataProvider';
-import { FormDataProvider  } from '../forms/FormDataProvider';
-import { required, email, min } from '../forms/validators';
 
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
@@ -13,6 +7,12 @@ import { Code } from 'components/Code';
 import { Select } from 'components/Select';
 import { UseFieldValue, UseFormStore, UseFormValues } from 'components/Hooks';
 import { FormLogger } from 'components/FormStoreLogger';
+
+import { getForm, Form, Field, useFormInstance } from 'forms';
+import { FieldDataProvider  } from 'forms/FieldDataProvider';
+import { FormDataProvider  } from 'forms/FormDataProvider';
+import { required, email, min } from 'forms/validators';
+import { useFormMethods } from 'forms/useFormMethods';
 
 export const nameAndAge = ({ msg = 'Name and age are required' } = {}) =>
   (value: string, { 'user.name': userName }: Record<string, any> = {}) => !value || !userName ? msg : false;
@@ -46,11 +46,13 @@ sample({
 
 export const StepOne = () => {
   const form = useFormInstance('stepOne');
-  const [reset] = useUnit([form.reset]);
+  const { reset } = useFormMethods('stepOne');
   const [age, setAge] = useState(35);
+  const [options, setOptions] = useState<typeof carOptions>([{ value: '', label: 'Not Selected' }]);
 
   useEffect(() => {
     setTimeout(() => setAge(20), 2000);
+    setTimeout(() => setOptions(carOptions), 1000);
   }, []);
 
   const submit = (values: any) => {
@@ -96,7 +98,7 @@ export const StepOne = () => {
         name="user.car"
         Field={Select}
         label="Car"
-        options={carOptions}
+        options={options}
         validators={[required()]}
       />
       <Field
