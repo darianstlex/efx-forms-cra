@@ -6,6 +6,34 @@ import { Code } from 'components/Code';
 
 import { Form, Field, useFormInstance } from 'forms';
 import { useFormMethods } from 'forms/useFormMethods';
+import {flattenObjectKeys} from "../forms/utils";
+
+const initialValues = flattenObjectKeys({
+  user: [
+    {
+      first: 'First_1',
+      last: 'Last_1',
+    },
+    {
+      first: 'First_2',
+      last: 'Last_2',
+    },
+    {
+      first: 'First_3',
+      last: 'Last_3',
+    },
+  ],
+  userAddress: [
+    '12',
+    'Some Street',
+    'London',
+  ],
+});
+
+console.log(flattenObjectKeys({
+  'user.address': 'Address_1',
+  'user.password': 'Address_2',
+}));
 
 
 export const StepThree = () => {
@@ -19,6 +47,7 @@ export const StepThree = () => {
   return (
     <Form
       keepOnUnmount
+      initialValues={initialValues}
       name="stepThree"
       onSubmit={submit}
     >
